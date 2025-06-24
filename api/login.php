@@ -1,9 +1,10 @@
 <?php 
 session_start();
 header("Access-Control-Allow-Origin: http://localhost:5173");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Access-Control-Allow-Methods: POST,GET,OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");
+header("Access-Control-Allow-Credentials: true");
 
 if($_SERVER["REQUEST_METHOD"] === "OPTIONS"){
     http_response_code(200);
@@ -40,7 +41,9 @@ if($existingUser){
         $_SESSION['USER'] = [
             'name' => $existingUser['full_name'],
             'username' => $existingUser['username'],
-            'email' => $existingUser['email']
+            'email' => $existingUser['email'],
+            'location' => $existingUser['location'],
+            'role' => $existingUser['role'],
         ];
         http_response_code(200);
         echo json_encode(["success" => "Login successful"]);
