@@ -1,0 +1,14 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Rubik:ital,wght@0,300..900;1,300..900&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap'); */
+/* @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,200..800;1,200..800&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap');
+@import "tailwindcss";
+body{
+    font-family: "Funnel Display", sans-serif;
+    padding: 0;
+    margin: 0;
+}
+
+.input-style{
+    @apply font-medium p-3 my-2 w-full rounded-xl justify-center bg-white text-black focus:border-orange-700 shadow-lg
+}
+
