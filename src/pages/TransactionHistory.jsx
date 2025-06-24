@@ -75,7 +75,7 @@ function TransactionHistory() {
       return;
     }
 
-        axios.post("http://localhost/api/transaction_history.php?action=topup", 
+        axios.post("https://api-hvzs.onrender.com/api/transaction_history.php?action=topup", 
           {amount, method},
           { withCredentials: true,
             headers: {"Content-Type": "application/json" },
@@ -132,7 +132,7 @@ function TransactionHistory() {
 
   axios
     .post(
-      "http://localhost/api/transaction_history.php?action=withdraw",
+      "https://api-hvzs.onrender.com/api/transaction_history.php?action=withdraw",
       { withdrawalAmount: formattedAmount, bank, accountNumber, accountName },
       {
         withCredentials: true,
@@ -162,7 +162,7 @@ function TransactionHistory() {
   useEffect(() => {
     axios
       .post(
-        "http://localhost/api/transaction_history.php?action=fetchAllTransactions",
+        "https://api-hvzs.onrender.com/api/transaction_history.php?action=fetchAllTransactions",
         {},
         { withCredentials: true }
       )

@@ -14,7 +14,7 @@ export const AdminProvider = ({ children }) => {
   const fetchAdminData = useCallback( async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost/api/admin.php", {
+      const res = await axios.get("https://api-hvzs.onrender.com/api/admin.php", {
         withCredentials: true,
         headers: { "Content-Type": "application/json" },
       });

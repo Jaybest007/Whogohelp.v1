@@ -65,7 +65,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
        try{ 
              
-            const response = await fetch("http://localhost/api/login.php", {
+            const response = await fetch("https://api-hvzs.onrender.com/api/login.php", {
                   method: 'POST',
                   headers: {
                       "Content-Type": "application/json",

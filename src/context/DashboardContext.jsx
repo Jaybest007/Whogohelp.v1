@@ -46,7 +46,7 @@ const unreadCount = useMemo(() => {
   const fetchDashboardData = useCallback(() => {
     setLoading(true);
     axios
-      .get("http://localhost/api/dashboard_data.php", {
+      .get("https://api-hvzs.onrender.com/api/dashboard_data.php", {
         withCredentials: true,
         headers: { "Content-Type": "application/json" }
       })
@@ -77,7 +77,7 @@ const unreadCount = useMemo(() => {
   const refreshWalletBalance = useCallback(() => {
     if(!isAuthenticated) return;
     axios
-      .get("http://localhost/api/wallet.php", {
+      .get("https://api-hvzs.onrender.com/api/wallet.php", {
         withCredentials: true,
         headers: { "Content-Type": "application/json" }
       })
@@ -97,7 +97,7 @@ const unreadCount = useMemo(() => {
     if(!isAuthenticated) return;
     axios
       .post(
-        "http://localhost/api/notifications.php",
+        "https://api-hvzs.onrender.com/api/notifications.php",
         { action: "fetch_notifications" },
         {
           withCredentials: true,
@@ -121,7 +121,7 @@ const unreadCount = useMemo(() => {
   const fetchChat = useCallback((errandId) => {
     axios
       .post(
-        "http://localhost/api/messages.php",
+        "https://api-hvzs.onrender.com/api/messages.php",
         { action: "fetchChat", errand_id: errandId },
         {
           withCredentials: true,
