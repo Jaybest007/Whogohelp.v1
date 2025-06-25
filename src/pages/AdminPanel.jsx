@@ -1,14 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaUserTie, FaWallet, FaTasks, FaCog, FaUsers, FaSearch, FaBan, FaPowerOff } from "react-icons/fa";
 import { useAdmin } from "../context/AdminContext";
 import AdminDashboardSkeleton from '../components/AdminSkeleton';
 import { Link } from "react-router-dom";
 import { IoChatboxEllipses } from "react-icons/io5";
-import SideBar from "./admin/SideBar";
-import SearchByUser from './admin/SearchUser';
-import SearchErrand from "./admin/SearchErrand";
+import SideBar from "../components/adminComponent/SideBar";
+import SearchByUser from '../components/adminComponent/SearchUser';
+import SearchErrand from "../components/adminComponent/SearchErrand";
 
 const AdminPanel = () => {
+  useEffect( ()=> {
+        document.title = "Admin Panel - WhoGoHelp";
+    }, []);
+
+
   const [searchUser, setSearchUser] = useState("");
   const [searchErrand, setSearchErrand] = useState("");
   const [isSidebarOpen, setSidebarOpen] = useState(false);

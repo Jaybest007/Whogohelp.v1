@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useAdmin } from "../../context/AdminContext";
 import { FaTimes } from "react-icons/fa";
-
-
+import CancelBtn from "./CancelBtn";
+import CompletedBtn from "./CompletedBtn";
 
 
 const SearchErrand = () => {
@@ -10,19 +10,28 @@ const SearchErrand = () => {
     const {adminData} = useAdmin();
     const [searchErrand, setSearchErrand] = useState()
 
-
+    
     return (
       <div>
-         <input
-        type="text"
-        placeholder="Search Errand ID..."
-        className="border border-gray-300 p-3 rounded-lg w-full sm:w-1/3 text-base inline"
-        value={searchErrand}
-        onChange={(e) => setSearchErrand(e.target.value)}
-        />
-        
-        <span onClick={()=> setSearchErrand("")} className="font-bold text-2xl bg-neutral-600 text-white px-5 py-3 ml-2 rounded-lg hover:bg-neutral-500 cursor-pointer ">x</span>
-       
+         <div className="relative w-full sm:w-1/3">
+          <input
+            type="text"
+            placeholder="Search Errand ID..."
+            className="border border-gray-300 p-3 pr-10 rounded-lg w-full text-base"
+            value={searchErrand}
+            onChange={(e) => setSearchErrand(e.target.value)}
+          />
+          {searchErrand && (
+            <span
+              onClick={() => setSearchErrand("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700 font-bold text-sm sm:text-base md:text-lg px-2 py-1 rounded cursor-pointer"
+            >
+              x
+            </span>
+          )}
+        </div>
+
+            
 
         {searchErrand && adminData?.AllErrands && (
         <div className="bg-white p-4 rounded-lg shadow-md mt-6 overflow-x-auto">
@@ -113,6 +122,12 @@ const SearchErrand = () => {
               </p>
               )}
             </div>
+            <div>
+                <p className="mb-2">Actions:</p>
+                {errand.status === "pending"  || errand.status === "progress" && (<><CancelBtn errand_id={errand.errand_Id} /> <CompletedBtn errand_id={errand.errand_Id}/></>)}
+                
+                      {/* <button onClick={() => banUser(user.username)} className="bg-red-800 text-white px-3 py-2 mr-3 rounded hover:bg-red-600 cursor-pointer shadow">Disable account</button> */}
+                </div>
             </div>
           ))}
           {adminData.AllErrands.filter((errand) =>

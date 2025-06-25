@@ -1,9 +1,15 @@
 import React from "react";
-import SideBar from "./SideBar";
-import SearchErrand from './SearchErrand'
+import SideBar from "../../components/adminComponent/SideBar";
+import SearchErrand from '../../components/adminComponent/SearchErrand'
 import { useAdmin } from "../../context/AdminContext";
+import { useEffect } from "react";
+import CancelBtn from "../../components/adminComponent/CancelBtn";
+import CompletedBtn from "../../components/adminComponent/CompletedBtn";
 
 const Errand = () => {
+    useEffect( ()=> {
+            document.title = "Errand - WhoGoHelp";
+        }, []);
 
     const {adminData} = useAdmin();
 
@@ -45,7 +51,7 @@ const Errand = () => {
                             <td className="p-2 sm:p-3">{errands.time}</td>
                             <td className="p-2 sm:p-3">{errands.posted_by}</td>
                             <td className="p-2 sm:p-3 text-yellow-500 font-semibold">{errands.status}</td>
-                            <td className="p-2 sm:p-3"><button className="bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600 cursor-pointer">Cancel</button></td>
+                            <td className="p-2 sm:p-3"><CancelBtn errand_id={errands.errand_Id} /></td>
                             </tr>
                         ))}
                         </tbody>
@@ -66,6 +72,7 @@ const Errand = () => {
                             <th className="p-2 sm:p-3 text-left">Time</th>
                             <th className="p-2 sm:p-3 text-left">Posted by</th>
                             <th className="p-2 sm:p-3 text-left">Status</th>
+                            <th className="p-2 sm:p-3 text-left">Actions</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -76,8 +83,9 @@ const Errand = () => {
                             <td className="p-2 sm:p-3">{errands.date}</td>
                             <td className="p-2 sm:p-3">{errands.time}</td>
                             <td className="p-2 sm:p-3">{errands.posted_by}</td>
-                            
                             <td className="p-2 sm:p-3 text-blue-500 font-semibold">{errands.status}</td>
+                            <td className="p-2 sm:p-3">{<><CancelBtn errand_id={errands.errand_Id} /> <CompletedBtn errand_id={errands.errand_Id}/> </>}</td>
+                            
                             </tr>
                         ))}
                         </tbody>
@@ -109,18 +117,13 @@ const Errand = () => {
                                 <td className="p-2 sm:p-3">{errands.date}</td>
                                 <td className="p-2 sm:p-3">{errands.time}</td>
                                 <td className="p-2 sm:p-3">{errands.posted_by}</td>
-                                
                                 <td className="p-2 sm:p-3 text-lime-500 font-semibold">{errands.status}</td>
                                 </tr>
                             ))}
                             </tbody>
                         </table>
                     </div>
-                </div>
-
-                <div className="mt-10">
-                    {/* rejected by Poster errands */}
-                    <h2 className="text-lg font-bold mb-2 text-gray-700 ">Completed Errands:</h2>
+                    <h2 className="text-lg font-bold mt-4 text-gray-700 ">Rejected Errands:</h2>
                     <div className="overflow-y-auto overflow-x-hidden max-h-[550px]">
                     <table className="w-full border-collapse text-sm sm:text-base ">
                         <thead>

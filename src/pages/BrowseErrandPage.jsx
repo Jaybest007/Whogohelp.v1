@@ -17,6 +17,7 @@ const BrowseErrandsPage = () => {
     refreshNotifications,
     filterBased,
     setFilterBased,
+    loading: dashboardLoading,
   } = useDashboard();
 
   const [locationErrands, setLocationErrands] = useState([]);
@@ -36,37 +37,39 @@ const BrowseErrandsPage = () => {
   };
 
   useEffect(() => {
-  const fetchAll = async () => {
-    if (initialized) return; 
-    setLoading(true);
-    try {
-      if (!dashboardData?.availableErrands?.length) {
-        await refreshDashboardData();
+    const fetchAll = async () => {
+      if (initialized || !dashboardData || dashboardLoading) return;
+
+      setLoading(true);
+      try {
+        const [locationRes, myErrandsRes] = await Promise.all([
+          axios.get("http://localhost/api/errand_history.php?action=byUsersLocation", {
+            withCredentials: true,
+          }),
+          axios.get("http://localhost/api/errand_history.php?action=myErrands", {
+            withCredentials: true,
+          }),
+        ]);
+
+        setLocationErrands(locationRes.data?.errands || []);
+        setMyErrandList(Array.isArray(myErrandsRes.data) ? myErrandsRes.data : []);
+        setInitialized(true);
+      } catch (error) {
+        console.error("Errand fetch error:", error);
+        toast.error("Failed to load errands.");
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const locationRes = await axios.get(
-        "http://localhost/api/errand_history.php?action=byUsersLocation",
-        { withCredentials: true }
-      );
-      setLocationErrands(locationRes.data?.errands || []);
+    fetchAll();
+  }, [dashboardData, dashboardLoading, initialized]);
 
-      const myErrandsRes = await axios.get(
-        "http://localhost/api/errand_history.php?action=myErrands",
-        { withCredentials: true }
-      );
-      setMyErrandList(Array.isArray(myErrandsRes.data) ? myErrandsRes.data : []);
-
-      setInitialized(true); // 
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to load errands.");
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (!dashboardData && !dashboardLoading) {
+      refreshDashboardData();
     }
-  };
-
-  fetchAll();
-}, [dashboardData, initialized]);
+  }, [dashboardData, dashboardLoading, refreshDashboardData]);
 
   return (
     <div className="browse-page bg-gradient-to-br from-black via-gray-700 to-gray-600 text-white min-h-screen p-4 pb-14">
@@ -85,7 +88,7 @@ const BrowseErrandsPage = () => {
         </select>
       </div>
 
-      {!initialized || loading ? (
+      {loading || !initialized ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(6)].map((_, index) => (
             <SkeletonCard key={index} />

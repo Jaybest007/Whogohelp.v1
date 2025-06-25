@@ -26,6 +26,11 @@ const SuccessPreview = lazy (()=> import('./components/successPreview'));
 const AdminPanel = lazy( ()=> import('./pages/AdminPanel'));
 const ChatWindow = lazy( ()=> import ('./pages/ChatWindow'));
 const Errand = lazy( ()=> import('./pages/admin/Errand'));
+const User  = lazy ( ()=> import('./pages/admin/User'));
+
+
+
+
 
 function App() {
   return (
@@ -71,6 +76,7 @@ function App() {
 
             <Route path='/admin' element={<AdminProvider> <AdminRoute> <AdminPanel /></AdminRoute> </AdminProvider>}/>
             <Route path='/admin/errand' element={<AdminProvider><AdminRoute><Errand/></AdminRoute></AdminProvider>}/> 
+            <Route path='/admin/user' element={<AdminProvider><AdminRoute><User/></AdminRoute></AdminProvider>}/> 
                 
                  
                 
