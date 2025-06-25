@@ -86,7 +86,7 @@ function Signup() {
     }
 
     try {
-        const response = await fetch("https://api-hvzs.onrender.com/api/signup.php", { //  Fix API endpoint
+        const response = await fetch("http://localhost/api/signup.php", { //  Fix API endpoint
             method: "POST",
             credentials: 'include',
             headers: { "Content-Type": "application/json" },
@@ -227,7 +227,7 @@ function Signup() {
         >
             
             
-          {inputType === "password" ?  <FaEye size={18}/>  : <FaEyeSlash size={18}/> }
+          {inputType === "password" ?   <FaEyeSlash size={18}/>  : <FaEye size={18}/>  }
         
         </button>
         {error.password && <p className="text-red-500 text-sm">{error.password}</p>}

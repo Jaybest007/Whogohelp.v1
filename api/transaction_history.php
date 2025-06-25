@@ -87,6 +87,34 @@ function generateTransactionId($errand_Id){
 
 require 'send_mail.php';
 
+/**
+ * Send a notification to a user.
+ *
+ * @param PDO $pdo
+ * @param string $username
+ * @param string $type
+ * @param string $message
+ * @param string $is_read (default: "false")
+ * @return bool
+ */
+function sendNotification($pdo, $username, $type, $message, $is_read = "false") {
+    try {
+        $sql = "INSERT INTO `notifications`(`username`, `type`, `message`, `is_read`) 
+                VALUES (:username, :type, :message, :is_read)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'username' => $username,
+            'type' => $type,
+            'message' => $message,
+            'is_read' => $is_read
+        ]);
+        return $stmt->rowCount() > 0;
+    } catch (PDOException $e) {
+        // Optionally log error: error_log($e->getMessage());
+        return false;
+    }
+}
+
 // -------Function to topup wallet-----
 function topUpWallet($pdo){
     $username = $_SESSION['USER']['username'];
@@ -131,72 +159,13 @@ function topUpWallet($pdo){
                 ]);
                 $TransactionLogged  = $stmt->rowCount() > 0;
                 if($TransactionLogged){
-                    $stmt = $pdo->prepare('INSERT INTO `notifications`(`username`, `type`, `message`, `is_read`) 
-                        VALUES (:username,:type,:message,:is_read)');
-                    $stmt->execute([
-                        'username' => $username,
-                        'type'=> $type,
-                        'message' => $descr,
-                        'is_read' => 'false',
-                        ]);
-                    $notified = $stmt->rowCount() > 0;
-
-                    if($notified){
-                        http_response_code(200);
-                        echo json_encode([
+                    sendNotification($pdo, $username, $type, $descr, 'false');
+                    http_response_code(200);
+                    echo json_encode([
                         'success' => true,
                         'message' => 'Top up Successful',
                     ]);
-
-                    // //LET SEND EMAIL 
-                    // $to = $email;
-                    // $subject = 'TOP UP SUCCESSFUL';
-                    // $html = "
-                    //         <html>
-                    //         <head>
-                    //         <style>
-                    //             body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
-                    //             .container { max-width: 450px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-                    //             .header { text-align: center; font-size: 22px; color: #ff9800; font-weight: bold; }
-                    //             .details { background: #fafafa; padding: 10px; border-radius: 5px; margin-top: 10px; }
-                    //             .footer { text-align: center; font-size: 14px; color: #777; margin-top: 20px; }
-                    //         </style>
-                    //         </head>
-                    //         <body>
-                    //         <div class='container'>
-                    //             <h2 class='header'>Top-Up Successful 🎉</h2>
-                    //             <p>Hello, your wallet has been successfully topped up.</p>
-                    //             <div class='details'>
-                    //             <p><strong>Amount:</strong> ₦35,000 </p>
-                    //             <p><strong>Payment Method:</strong> Bank transfer</p>
-                    //             </div>
-                    //             <p class='footer'>Thank you for using our service!</p>
-                    //         </div>
-                    //         </body>
-                    //         </html>";
-
-                    // $result = sendMail($to, $subject, $html);
-                    // if($result === true){
-
-                    //     echo json_encode(['success' => true, 'message' => 'Top up Email sent']);
-                    // } else{
-                    //     echo json_encode(['message' => 'Failed to send email']);
-                    // }
-                    
-                    // require_once 'sendMail.php';
-
-                    // $to = "whogohelpdesk@gmail.com";
-                    // $subject = "Verify Your Email";
-                    // $html = "<p>Please click the link to verify: <a href='https://yourdomain.com/verify.php'>Verify</a></p>";
-
-                    // if (sendMail($to, $subject, $html)) {
-                    //     echo json_encode(['message' => 'Top up Email sent']);
-                    // } else {
-                    //     echo json_encode(['message' => 'Failed to send email']);
-                    // }
-                    
                     exit;
-                    }
                 }
             }else{
                 http_response_code(200);
@@ -291,24 +260,13 @@ function withdraw($pdo){
                 $TransactionLogged  = $stmt->rowCount() > 0;
 
                 if($TransactionLogged){
-                    $stmt = $pdo->prepare('INSERT INTO `notifications`(`username`, `type`, `message`, `is_read`) 
-                        VALUES (:username,:type,:message,:is_read)');
-                    $stmt->execute([
-                        'username' => $username,
-                        'type'=> $type,
-                        'message' => $descr,
-                        'is_read' => 'false',
-                        ]);
-                    $notified = $stmt->rowCount() > 0;
-
-                    if($notified){
-                        http_response_code(200);
-                        echo json_encode([
+                    sendNotification($pdo, $username, $type, $descr, 'false');
+                    http_response_code(200);
+                    echo json_encode([
                         'success' => true,
                         'message' => 'Withdrawal is Successful',
                     ]);
                     exit;
-                    }
                 }
             }else{
                 http_response_code(200);

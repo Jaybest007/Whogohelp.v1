@@ -45,13 +45,13 @@ const BrowseErrandsPage = () => {
       }
 
       const locationRes = await axios.get(
-        "https://api-hvzs.onrender.com/api/errand_history.php?action=byUsersLocation",
+        "http://localhost/api/errand_history.php?action=byUsersLocation",
         { withCredentials: true }
       );
       setLocationErrands(locationRes.data?.errands || []);
 
       const myErrandsRes = await axios.get(
-        "https://api-hvzs.onrender.com/api/errand_history.php?action=myErrands",
+        "http://localhost/api/errand_history.php?action=myErrands",
         { withCredentials: true }
       );
       setMyErrandList(Array.isArray(myErrandsRes.data) ? myErrandsRes.data : []);

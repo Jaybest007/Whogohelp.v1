@@ -51,6 +51,34 @@ switch($action){
         exit;
 }
 
+/**
+ * Send a notification to a user.
+ *
+ * @param PDO $pdo
+ * @param string $username
+ * @param string $type
+ * @param string $message
+ * @param string $is_read (default: "false")
+ * @return bool
+ */
+function sendNotification($pdo, $username, $type, $message, $is_read = "false") {
+    try {
+        $sql = "INSERT INTO `notifications`(`username`, `type`, `message`, `is_read`) 
+                VALUES (:username, :type, :message, :is_read)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'username' => $username,
+            'type' => $type,
+            'message' => $message,
+            'is_read' => $is_read
+        ]);
+        return $stmt->rowCount() > 0;
+    } catch (PDOException $e) {
+        error_log("Notification error: " . $e->getMessage());
+        return false;
+    }
+}
+
 function sendMessage($pdo, $data){
     $chat_id = htmlspecialchars($data['chat_id'] ?? '');
     $user_status = htmlspecialchars($data['user_status'] ?? '');
@@ -70,23 +98,15 @@ function sendMessage($pdo, $data){
                 'sender_username' => $sender,
                 'message_text' => $message_text,
                 'is_read' => $is_read,
-
         ]);
         if($stmt->rowCount() > 0){
             http_response_code(200);
             echo json_encode(["success" => true]);
 
             if($user_status === "offline"){
-                $stmt = $pdo->prepare("INSERT INTO `notifications`(`username`, `type`, `message`, `is_read`) 
-                VALUES (:username,:type,:message,:is_read)");
-                $stmt->execute([
-                            "username" => $receiver,
-                            'type' => 'chat',
-                            'message'=> $message_text,
-                            'is_read'=> "false",
-                        ]);
+                sendNotification($pdo, $receiver, 'chat', $message_text, "false");
                 http_response_code(200);
-                 exit;
+                exit;
             }
            
         } else{
@@ -95,8 +115,9 @@ function sendMessage($pdo, $data){
             exit;
         }
     } catch (PDOException $e) {
+        error_log("Send message error: " . $e->getMessage());
         http_response_code(500);
-        echo json_encode(["error" => "Database query failed", "details" => $e->getMessage()]);
+        echo json_encode(["error" => "Database query failed"]);
         exit;
     }
 }
@@ -118,28 +139,30 @@ function fetchConversation($pdo, $data){
         }
 
     } catch (PDOException $e) {
+        error_log("Fetch conversation error: " . $e->getMessage());
         http_response_code(500);
-        echo json_encode(["error" => "Database query failed", "details" => $e->getMessage()]);
+        echo json_encode(["error" => "Database query failed"]);
         exit;
     }
 }
 
 function  markasread($pdo, $data) {
-        $chat_id = htmlspecialchars($data['chat_id'] ?? '');
-        $currentUser = $_SESSION['USER']['username'];
+    $chat_id = htmlspecialchars($data['chat_id'] ?? '');
+    $currentUser = $_SESSION['USER']['username'];
 
-        try{
-            $stmt = $pdo->prepare('UPDATE `messages` SET `is_read`= 1 WHERE `chat_id` = :chat_id AND `sender_username` != :current_user AND is_read = 0');
-            $stmt->execute(['chat_id'=> $chat_id, 'current_user'=> $currentUser]);
-            
-            if($stmt->rowCount() > 0){
-                http_response_code(200);
-                echo json_encode(['success'=> true]);
-            };
+    try{
+        $stmt = $pdo->prepare('UPDATE `messages` SET `is_read`= 1 WHERE `chat_id` = :chat_id AND `sender_username` != :current_user AND is_read = 0');
+        $stmt->execute(['chat_id'=> $chat_id, 'current_user'=> $currentUser]);
+        
+        if($stmt->rowCount() > 0){
+            http_response_code(200);
+            echo json_encode(['success'=> true]);
+        };
 
-        } catch (PDOException $e) {
+    } catch (PDOException $e) {
+        error_log("Mark as read error: " . $e->getMessage());
         http_response_code(500);
-        echo json_encode(["error" => "Database query failed", "details" => $e->getMessage()]);
+        echo json_encode(["error" => "Database query failed"]);
         exit;
     }
 }
@@ -165,8 +188,9 @@ function fetchChat($pdo, $data){
         }
         
     }  catch (PDOException $e) {
+        error_log("Fetch chat error: " . $e->getMessage());
         http_response_code(500);
-        echo json_encode(["error" => "Database query failed", "details" => $e->getMessage()]);
+        echo json_encode(["error" => "Database query failed"]);
         exit;
     }
 }
@@ -184,20 +208,18 @@ function fetchChatbyId($pdo, $data){
         }
         
     }  catch (PDOException $e) {
+        error_log("Fetch chat by id error: " . $e->getMessage());
         http_response_code(500);
-        echo json_encode(["error" => "Database query failed", "details" => $e->getMessage()]);
+        echo json_encode(["error" => "Database query failed"]);
         exit;
     }
 }
 
 function updateUserStatus($pdo, $data){
-    
-
     if (!isset($data['username'], $data['receiver'])) {
-    echo json_encode(["status" => null, "last_seen" => null]);
-    error_log("Incoming status update payload: " . json_encode($data));
-
-    return;
+        echo json_encode(["status" => null, "last_seen" => null]);
+        error_log("Incoming status update payload: " . json_encode($data));
+        return;
     } 
     $username = htmlspecialchars($data['username']);
     $receiver = htmlspecialchars($data['receiver']);
@@ -217,17 +239,18 @@ function updateUserStatus($pdo, $data){
         $now = time();
         $diffInseconds = $now - $lastSeenTime;
 
-       if ($diffInseconds < 30) {
-    error_log("User [$receiver] is online. Last seen: $lastseen");
-    echo json_encode(["status" => "online", "last_seen" => $lastseen]);
-} else {
-    error_log("User [$receiver] is offline. Last seen: $lastseen");
-    echo json_encode(["status" => "offline", "last_seen" => $lastseen]);
-}
+        if ($diffInseconds < 30) {
+            error_log("User [$receiver] is online. Last seen: $lastseen");
+            echo json_encode(["status" => "online", "last_seen" => $lastseen]);
+        } else {
+            error_log("User [$receiver] is offline. Last seen: $lastseen");
+            echo json_encode(["status" => "offline", "last_seen" => $lastseen]);
+        }
 
     }catch (PDOException $e) {
+        error_log("Update user status error: " . $e->getMessage());
         http_response_code(500);
-        echo json_encode(["error" => "Database query failed", "details" => $e->getMessage()]);
+        echo json_encode(["error" => "Database query failed"]);
         exit;
     }
 }

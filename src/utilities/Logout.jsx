@@ -10,7 +10,7 @@ const Logout = () => {
   useEffect(() => {
     axios
       .post(
-        "https://api-hvzs.onrender.com/api/logout.php",
+        "http://localhost/api/logout.php",
         {}, 
         {
           withCredentials: true,

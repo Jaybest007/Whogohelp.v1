@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaCheckCircle } from "react-icons/fa";
 import { useDashboard } from "../context/DashboardContext";
 
-function PostErrand({ onSuccess }, ) {
+function PostErrand({ onSuccess, triggerWalletRefresh }  ) {
   const [errandData, setErrandData] = useState({
     title: "",
     description: "",
@@ -48,7 +48,7 @@ async function handleSubmit(event) {
   }
 
   try {
-    const response = await fetch("https://api-hvzs.onrender.com/api/post_errand.php", {
+    const response = await fetch("http://localhost/api/post_errand.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -82,8 +82,9 @@ async function handleSubmit(event) {
         reward: "",
         notes: "",
       });
-fetchDashboardData();
-      // Auto clear the success message after 4 seconds
+      triggerWalletRefresh();
+// fetchDashboardData();
+     
       setTimeout(() => {
         setPosted(false);
         setSuccess(false);

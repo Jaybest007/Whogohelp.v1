@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDashboard } from '../context/DashboardContext';
+import { useAdmin } from '../context/AdminContext';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
  function Login(){
@@ -19,6 +20,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const navigate = useNavigate()
     const {refreshDashboardData, refreshNotifications} = useDashboard();
+
 
 
     function handleInputChange(event){
@@ -52,27 +54,28 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
         setLoading(true);
         const {email, password} = loginData;
 
-        //validation
+        // Validation
         if (email.trim() === "" || password.trim() === ""){
-            setError("All input is required")
-        }
-
-        //checking to see if there is no more error
-        if(error !== ""){
-            setLoading(false)
+            setError("All input is required");
+            setLoading(false);
             return;
         }
 
-       try{ 
-             
-            const response = await fetch("https://api-hvzs.onrender.com/api/login.php", {
-                  method: 'POST',
-                  headers: {
-                      "Content-Type": "application/json",
-                  },
-                  credentials: 'include',
-                  body: JSON.stringify(loginData),
-              });
+        // If there's an error, don't proceed
+        if(error !== ""){
+            setLoading(false);
+            return;
+        }
+
+        try{ 
+            const response = await fetch("http://localhost/api/login.php", {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: 'include',
+                body: JSON.stringify(loginData),
+            });
             const data = await response.json();
 
             if (response.ok){
@@ -80,19 +83,23 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
                 setSuccess(data.success);
                 await refreshDashboardData();
                 await refreshNotifications();
-                navigate("/dashboard")
+                if (data.role === "user"){
+                    navigate("/dashboard", { replace: true });
+                }
+                if (data.role === "admin"){
+                    navigate("/admin", { replace: true }); 
+                }
             } else{
                 setError(data.error || "Login failed");
-                console.log("login failed")
+                console.log("login failed");
             }
 
         } catch(err){
-            console.log(err)
-            setError("An error occured")
-        }finally{
-            setLoading(false)
+            console.log(err);
+            setError("An error occurred");
+        } finally {
+            setLoading(false);
         }
-        
     }
 
     
@@ -138,7 +145,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
           className="absolute top-10 right-4 text-gray-500 text-sm hover:text-orange-600 transition"
           onClick={showpassword}
         >
-           {inputType === "password" ?  <FaEye size={18}/>  : <FaEyeSlash size={18}/> }
+           {inputType === "password" ?  <FaEyeSlash size={18}/>  : <FaEye size={18}/> }
         </button>
       </div>
 

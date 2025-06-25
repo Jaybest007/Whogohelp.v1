@@ -1,5 +1,3 @@
-// src/components/WelcomeHeader.jsx
-
 import React from 'react';
 import { useDashboard } from '../context/DashboardContext';
 

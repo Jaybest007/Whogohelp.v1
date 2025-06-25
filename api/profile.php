@@ -49,48 +49,45 @@ switch($action){
 }
 
 function fetchUserData($pdo){
-    // $email = $_SESSION['USER']['email'];
     $username = $_POST['username'] ?? "";
     try{
-        //LET FETCH USERDATA
-    $sql = "SELECT `full_name`, `username`, `email`, `phone`, `location`, `about` FROM `users` WHERE `username` = :username ";
-    $sql2 = "SELECT * FROM `errands` WHERE (posted_by = :posted_by OR accepted_by = :accepted_by) ORDER BY `date` DESC, `time` DESC";
-    $stmt = $pdo->prepare($sql);
-    $stmt2 = $pdo->prepare($sql2);
-    $stmt->execute(['username' => $username]);
-    $stmt2->execute(['posted_by' => $username , 'accepted_by' => $username]);
+        $sql = "SELECT `full_name`, `username`, `email`, `phone`, `location`, `about` FROM `users` WHERE `username` = :username ";
+        $sql2 = "SELECT * FROM `errands` WHERE (posted_by = :posted_by OR accepted_by = :accepted_by) ORDER BY `date` DESC, `time` DESC";
+        $stmt = $pdo->prepare($sql);
+        $stmt2 = $pdo->prepare($sql2);
+        $stmt->execute(['username' => $username]);
+        $stmt2->execute(['posted_by' => $username , 'accepted_by' => $username]);
 
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    $userErrand = $stmt2->fetchAll(PDO::FETCH_ASSOC);
-    if ($user ){
-        http_response_code(200);
-        echo json_encode([
-            'user' => $user,
-            'errands' => $userErrand
-        ]);
-        exit;
-    } else{
-        http_response_code(200);
-        echo json_encode([
-            'user' => null,
-            'errands' => []
-        ]);
-        exit;
-    }
-} catch (PDOException $e) {
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $userErrand = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+        if ($user ){
+            http_response_code(200);
+            echo json_encode([
+                'user' => $user,
+                'errands' => $userErrand
+            ]);
+            exit;
+        } else{
+            http_response_code(200);
+            echo json_encode([
+                'user' => null,
+                'errands' => []
+            ]);
+            exit;
+        }
+    } catch (PDOException $e) {
+        error_log("Fetch user data error: " . $e->getMessage());
         http_response_code(500);
-        echo json_encode(["error" => "Database query failed", "details" => $e->getMessage()]);
-        exit;
+        echo json_encode(["error" => ["server" => "Database error occurred."]]);
     }
-
 }
 
 //update user about
 function updateProfile($pdo){
-    $about = trim($_POST['about'] ?? '');
+    $about = htmlspecialchars(trim($_POST['about'] ?? ''));
     $email = $_SESSION['USER']['email'];
-    $phone = trim($_POST['phone'] ?? "");
-    $location = trim($_POST["location"] ??"");
+    $phone = htmlspecialchars(trim($_POST['phone'] ?? ""));
+    $location = htmlspecialchars(trim($_POST["location"] ??""));
     
     try{
         $sql = "UPDATE `users` SET `phone`=:phone, `location`=:location, `about`=:about WHERE `email` = :email";
@@ -102,7 +99,6 @@ function updateProfile($pdo){
             'email' => $email,
         ]);
 
-     
         if($stmt->rowCount() > 0){
             http_response_code(200);
             echo json_encode(['message'=> 'Edit successfully']);
@@ -113,8 +109,8 @@ function updateProfile($pdo){
             echo json_encode(['message'=> 'No changes made']);
         }
     }catch (PDOException $e) {
+        error_log("Update profile error: " . $e->getMessage());
         http_response_code(500);
-        echo json_encode(["error" => "Database query failed", "details" => $e->getMessage()]);
-        exit;
-   }
+        echo json_encode(["error" => ["server" => "Database error occurred."]]);
+    }
 }

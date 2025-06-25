@@ -33,20 +33,21 @@ const unreadCount = useMemo(() => {
       }, [notifications]);
 
 
-      //==check if user is authenticated before trying to fetch====
+      
   useEffect(() => {
     if(!isAuthenticated) return;
     if (!dashboardData) {
       fetchDashboardData();
+      fetchNotifications();
     }
-    fetchNotifications();
+    
   }, []);
  
 //==this is to fetch dashboard data
   const fetchDashboardData = useCallback(() => {
     setLoading(true);
     axios
-      .get("https://api-hvzs.onrender.com/api/dashboard_data.php", {
+      .get("http://localhost/api/dashboard_data.php", {
         withCredentials: true,
         headers: { "Content-Type": "application/json" }
       })
@@ -77,7 +78,7 @@ const unreadCount = useMemo(() => {
   const refreshWalletBalance = useCallback(() => {
     if(!isAuthenticated) return;
     axios
-      .get("https://api-hvzs.onrender.com/api/wallet.php", {
+      .get("http://localhost/api/wallet.php", {
         withCredentials: true,
         headers: { "Content-Type": "application/json" }
       })
@@ -97,7 +98,7 @@ const unreadCount = useMemo(() => {
     if(!isAuthenticated) return;
     axios
       .post(
-        "https://api-hvzs.onrender.com/api/notifications.php",
+        "http://localhost/api/notifications.php",
         { action: "fetch_notifications" },
         {
           withCredentials: true,
@@ -121,7 +122,7 @@ const unreadCount = useMemo(() => {
   const fetchChat = useCallback((errandId) => {
     axios
       .post(
-        "https://api-hvzs.onrender.com/api/messages.php",
+        "http://localhost/api/messages.php",
         { action: "fetchChat", errand_id: errandId },
         {
           withCredentials: true,
@@ -152,9 +153,9 @@ const unreadCount = useMemo(() => {
 
   // this to clear notification
   useEffect(() => {
-  const refreshDashboard = () => {
-    if(!isAuthenticated) return;
+  if (!isAuthenticated) return; 
 
+  const refreshDashboard = () => {
     if (!isUserActive.current && !location.pathname.includes("/notification")) {
       smartRefresh();
     }
@@ -163,7 +164,7 @@ const unreadCount = useMemo(() => {
   const refreshNotifs = () => {
     if (isUserActive.current && !location.pathname.includes("/notification")) {
       fetchNotifications();
-    } 
+    }
   };
 
   // Only fetch if not already present
@@ -172,9 +173,8 @@ const unreadCount = useMemo(() => {
   }
 
   if (!Array.isArray(notifications) || notifications.length === 0) {
-  fetchNotifications();
-}
-
+    fetchNotifications();
+  }
 
   const dashboardInterval = setInterval(refreshDashboard, 60000);
   const notificationInterval = setInterval(refreshNotifs, 500);
@@ -183,7 +183,15 @@ const unreadCount = useMemo(() => {
     clearInterval(dashboardInterval);
     clearInterval(notificationInterval);
   };
-}, [location.pathname, smartRefresh, fetchDashboardData, fetchNotifications, dashboardData, notifications]);
+}, [
+  location.pathname,
+  smartRefresh,
+  fetchDashboardData,
+  fetchNotifications,
+  dashboardData,
+  notifications,
+  isAuthenticated 
+]);
 
 
 

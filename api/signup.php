@@ -97,16 +97,17 @@ try {
         'balance' => "0",
     ]);
 
-     $_SESSION['USER'] = [
-            'name' => $name,
-            'username' => $username,
-            'email' => $email,
-            'location' => $location,
-            'role' => 'user',
-        ];
+    $_SESSION['USER'] = [
+        'name' => $name,
+        'username' => $username,
+        'email' => $email,
+        'location' => $location,
+        'role' => 'user',
+    ];
     http_response_code(200);
     echo json_encode(['success' => true, "message" => "Signup successful"]);
 } catch (PDOException $e) {
+    error_log("Signup error: " . $e->getMessage());
     http_response_code(500);
-    echo json_encode(["errors" => ["server" => "Database error: " . $e->getMessage()]]);
+    echo json_encode(["error" => ["server" => "Database error occurred."]]);
 }

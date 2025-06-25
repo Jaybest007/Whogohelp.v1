@@ -46,7 +46,7 @@ if($existingUser){
             'role' => $existingUser['role'],
         ];
         http_response_code(200);
-        echo json_encode(["success" => "Login successful"]);
+        echo json_encode(["success" => "Login successful", 'role' => $existingUser['role']]);
         exit;
     } else {
         http_response_code(400);

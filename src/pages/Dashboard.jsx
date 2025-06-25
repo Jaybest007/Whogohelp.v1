@@ -51,7 +51,7 @@ const Dashboard = () => {
         <div className="min-h-screen flex flex-col overflow-x-hidden bg-gradient-to-br from-black via-gray-700 to-gray-600 text-white">        
           <div className="flex-1 w-full max-w-4xl mx-auto px-4 py-6 pb-32 space-y-8">
             <WelcomeHeader username={dashboardData?.username} />
-            <Wallet wallet={dashboardData?.walletBalance?.balance} />
+            <Wallet wallet={dashboardData?.walletBalance?.balance} triggerWalletRefresh={refreshWalletBalance} />
             
             {successMessage && (
               <div className="text-green-300 font-semibold bg-green-900 p-3 rounded-lg">

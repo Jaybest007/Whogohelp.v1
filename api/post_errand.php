@@ -127,8 +127,9 @@ if($stmt2->rowCount() > 0){
                 http_response_code(201);
                 echo json_encode(["success" => true]);
             } catch (PDOException $e) {
+                error_log("Post errand error: " . $e->getMessage());
                 http_response_code(500);
-                echo json_encode(["error" => ["server" => "Database error: " . $e->getMessage()]]);
+                echo json_encode(["error" => ["server" => "Database error occurred."]]);
             }
         } else {
             http_response_code(500);

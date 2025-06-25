@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useCallback, useEffect, useRef } from "react";
 import axios from "axios";
 import { useDashboard } from "./DashboardContext";
+import { useNavigate } from "react-router-dom";
+
 
 export const AdminContext = createContext();
 export const useAdmin = () => useContext(AdminContext);
@@ -10,11 +12,15 @@ export const AdminProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const lastFetched = useRef(0);
   const { clearDashboardData } = useDashboard();
+  const navigate = useNavigate();
+  
+
+
 
   const fetchAdminData = useCallback( async () => {
     setLoading(true);
     try {
-      const res = await axios.get("https://api-hvzs.onrender.com/api/admin.php", {
+      const res = await axios.get("http://localhost/api/admin.php", {
         withCredentials: true,
         headers: { "Content-Type": "application/json" },
       });
@@ -23,7 +29,7 @@ export const AdminProvider = ({ children }) => {
       lastFetched.current = Date.now();
     } catch (err) {
       if (err.response?.status === 401) {
-        clearDashboardData();
+        navigate("/");  
       }
       console.error("Admin Dashboard fetch error:", err);
     } finally {
@@ -32,8 +38,10 @@ export const AdminProvider = ({ children }) => {
   }, [clearDashboardData]);
 
   useEffect(() => {
-    fetchAdminData();
-  }, [fetchAdminData]);
+    if (!adminData){
+      fetchAdminData();
+    }
+  }, [adminData, fetchAdminData]);
 
   return (
     <AdminContext.Provider

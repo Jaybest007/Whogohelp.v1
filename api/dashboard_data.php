@@ -20,7 +20,7 @@ if(!isset($_SESSION['USER'])){
 }
 
 $username = $_SESSION['USER']['username'];
-
+$role = $_SESSION['USER']['role'];
 try{
     //get wallet balance
     $stmt = $pdo->prepare('SELECT `balance` FROM `wallet` WHERE `username` = :username');
@@ -55,6 +55,7 @@ try{
         'success' => true,
         'loggedIn' => true,
         'username' => $username,
+        'role' => $role,
         'walletBalance' => $walletBalance,
         'ongoingErrands' => $ongoing_errands,
         'completedErrands' => $completed_errands,
@@ -64,9 +65,9 @@ try{
 
 
 } catch (PDOException $e) {
+    error_log("Dashboard data error: " . $e->getMessage());
     echo json_encode([
-        'sucsess' => false,
-        'message' => 'Error fecthing dashboard data',
-        'error' => $e->getMessage()
+        'success' => false,
+        'message' => 'Error fetching dashboard data'
     ]);
 }

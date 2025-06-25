@@ -65,6 +65,34 @@ switch($action){
 }
 
 
+/**
+ * Send a notification to a user.
+ *
+ * @param PDO $pdo
+ * @param string $username
+ * @param string $type
+ * @param string $message
+ * @param string $is_read (default: "false")
+ * @return bool
+ */
+function sendNotification($pdo, $username, $type, $message, $is_read = "false") {
+    try {
+        $sql = "INSERT INTO `notifications`(`username`, `type`, `message`, `is_read`) 
+                VALUES (:username, :type, :message, :is_read)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'username' => $username,
+            'type' => $type,
+            'message' => $message,
+            'is_read' => $is_read
+        ]);
+        return $stmt->rowCount() > 0;
+    } catch (PDOException $e) {
+        // Optionally log error: error_log($e->getMessage());
+        return false;
+    }
+}
+
 function getErrandGlobalPending($pdo){
     $status = "pending";
     try {
@@ -143,7 +171,7 @@ function fetchByUsersLocation($pdo){
 
     exit;
 }
-// this fetch the errands of the logged in user that is pending not everyons errands
+// this fetch the errands of the logged in user that is pending not everyones errands
 function fetchMyOwnErrand($pdo){
     $postedBy = $_SESSION['USER']['username'];
     try {
@@ -201,6 +229,7 @@ function getErrandCompleted($pdo){
     }
 }
 
+
 function changeStatus_progress($pdo){
     $errand_Id = $_GET['errand_Id'];
     $accepted_by = $_SESSION['USER']['username'];
@@ -243,24 +272,16 @@ function changeStatus_progress($pdo){
 
         $receiver = $current['posted_by'];
         $message = $accepted_by . " accepted your errand";
-
-        $sqlNotification = "INSERT INTO `notifications`(`username`, `type`, `message`, `is_read`) VALUES (:username,:type,:message,:is_read)";
-        $stmtNotification = $pdo->prepare($sqlNotification);   
-        $stmtNotification->execute([
-            'username' => $receiver,
-            'type' => "errand accepted",
-            'message' => $message,
-            'is_read' => "false"
-        ]);
+        sendNotification($pdo, $receiver, "errand accepted", $message);
 
         // ==let create chat ==
         // check if chat not exit already
         $check_for_chat = $pdo->prepare("SELECT * FROM chat WHERE errand_id = :errand_id AND poster_username = :poster AND helper_username = :helper");
         $check_for_chat->execute([
-                            "errand_id" => $_GET['errand_Id'],
-                            "poster" => $current['posted_by'],
-                            "helper" => $accepted_by 
-                        ]);
+            "errand_id" => $_GET['errand_Id'],
+            "poster" => $current['posted_by'],
+            "helper" => $accepted_by 
+        ]);
         if ($check_for_chat->rowCount() > 0) {
             http_response_code(404);
             echo json_encode(["error" => "Chat already exist"]);
@@ -275,13 +296,12 @@ function changeStatus_progress($pdo){
         $create_chat = $pdo->prepare("INSERT INTO `chat`(`chat_id`, `errand_id`, `poster_username`, `helper_username`, `created_at`, `status`) 
                                     VALUES (:chat_id, :errand_id, :poster_username, :helper_username, :created_at, :status)");
         $create_chat->execute([
-                "chat_id"=> $chat_id,
-                'errand_id' => $_GET['errand_Id'],
-                'poster_username' => $current['posted_by'],
-                'helper_username' => $accepted_by,
-                'created_at' => date('c'),
-                'status' => 'active',
-
+            "chat_id"=> $chat_id,
+            'errand_id' => $_GET['errand_Id'],
+            'poster_username' => $current['posted_by'],
+            'helper_username' => $accepted_by,
+            'created_at' => date('c'),
+            'status' => 'active',
         ]);
         if ($create_chat->rowCount() > 0) {
             http_response_code(200);
@@ -292,12 +312,10 @@ function changeStatus_progress($pdo){
 
     } catch (PDOException $e) {
         http_response_code(500);
-        echo json_encode(["error" => "Database query failed", "details" => $e->getMessage()]);
+        echo json_encode(["error" => "Database query failed"]);
         exit;
     }
 }
-
-
 
 function generateTransactionId($errand_Id){
     $date = date('c');
@@ -325,15 +343,7 @@ function changeStatus_completed_by_helper($pdo){
             if($errand) {
                 $receiver = $errand['posted_by'];
                 $message = $errand['accepted_by'] . " Completed your errand and waiting for your approval";
-                $sqlNotification = "INSERT INTO `notifications`(`username`, `type`, `message`, `is_read`) 
-                VALUES (:username,:type,:message,:is_read)";
-                $stmtNotification = $pdo->prepare($sqlNotification);   
-                $stmtNotification->execute([
-                    'username' => $receiver,
-                    'type' => "errand completed",
-                    'message' => $message,
-                    'is_read' => "false"
-                ]);
+                sendNotification($pdo, $receiver, "errand completed", $message);
                 http_response_code(200);
                 echo json_encode(["success" => true,  "message" => "Welldone!!...Waiting for the poster for confirmation"]);
                 exit;
@@ -345,7 +355,7 @@ function changeStatus_completed_by_helper($pdo){
 
     } catch (PDOException $e) {
         http_response_code(500);
-        echo json_encode(["error" => "Database query failed", "details" => $e->getMessage()]);
+        echo json_encode(["error" => "Database query failed"]);
         exit;
     }
 }
@@ -370,17 +380,9 @@ function changeStatus_rejected_by_poster($pdo){
             if($errand) {
                 $receiver = $errand['accepted_by'];
                 $message = $errand['posted_by'] . " Rejected the confirmation because : " . $reason ;
-                $sqlNotification = "INSERT INTO `notifications`(`username`, `type`, `message`, `is_read`) 
-                VALUES (:username,:type,:message,:is_read)";
-                $stmtNotification = $pdo->prepare($sqlNotification);   
-                $stmtNotification->execute([
-                    'username' => $receiver,
-                    'type' => "confirmation rejected",
-                    'message' => $message,
-                    'is_read' => "false"
-                ]);
+                sendNotification($pdo, $receiver, "confirmation rejected", $message);
                 http_response_code(200);
-                echo json_encode(["success" => true, "message" => "Errand confirmation is successfuly rejected "]);
+                echo json_encode(["success" => true, "message" => "Errand confirmation is successfully rejected "]);
                 exit;
             }
         } else{
@@ -390,13 +392,10 @@ function changeStatus_rejected_by_poster($pdo){
 
     } catch (PDOException $e) {
         http_response_code(500);
-        echo json_encode(["error" => "Database query failed", "details" => $e->getMessage()]);
+        echo json_encode(["error" => "Database query failed"]);
         exit;
     }
-
-
 }
-
 
 function changeStatus_completed($pdo){
     $status = "completed";
@@ -441,23 +440,11 @@ function changeStatus_completed($pdo){
                         http_response_code(200);
                         echo json_encode(["success" => true,  "message" => "Errand Successfully completed"]);
 
-                        
                         $receiver = $errand['accepted_by'];
                         $message = $accepted_by . " confirmed you completed his/her your errand";
-                        $sqlNotification = "INSERT INTO `notifications`(`username`, `type`, `message`, `is_read`) 
-                            VALUES (:username,:type,:message,:is_read)";
-                        $stmtNotification = $pdo->prepare($sqlNotification);   
-                        $stmtNotification->execute([
-                            'username' => $receiver,
-                            'type' => "errand completed",
-                            'message' => $message,
-                            'is_read' => "false"
-                        ]);
-                        if($stmtNotification->rowCount() > 0) {
-                            $stmt = $pdo->prepare("UPDATE `chat` SET `status`= 'closed' WHERE `errand_id` = :errand_id");
-                            $stmt->execute(['errand_id' => $errand_Id]);
-
-                        }
+                        sendNotification($pdo, $receiver, "errand completed", $message);
+                        $stmt = $pdo->prepare("UPDATE `chat` SET `status`= 'closed' WHERE `errand_id` = :errand_id");
+                        $stmt->execute(['errand_id' => $errand_Id]);
                         exit;
 
                     } else{
@@ -479,18 +466,10 @@ function changeStatus_completed($pdo){
 
     } catch (PDOException $e) {
         http_response_code(500);
-        echo json_encode(["error" => "Database query failed", "details" => $e->getMessage()]);
+        echo json_encode(["error" => "Database query failed"]);
         exit;
     }
 }
-
-
-
-
-
-
-
-
 
 function changeStatus_Cancel($pdo){
     $errand_Id = $_GET['errand_Id'];
@@ -560,19 +539,9 @@ function changeStatus_Cancel($pdo){
 
             $receiver = $errand['posted_by'];
             $message = "Your errand has been canceled and your fund has been reversed";
-            $sqlNotification = "INSERT INTO `notifications`(`username`, `type`, `message`, `is_read`) 
-                VALUES (:username,:type,:message,:is_read)";
-            $stmtNotification = $pdo->prepare($sqlNotification);   
-            $stmtNotification->execute([
-                'username' => $receiver,
-                'type' => "errand canceled",
-                'message' => $message,
-                'is_read' => "false"
-            ]);
-            if($stmtNotification->rowCount() > 0) {
-                $stmt = $pdo->prepare("UPDATE `chat` SET `status`= 'closed' WHERE `errand_id` = :errand_id");
-                $stmt->execute(['errand_id' => $errand_Id]);
-                }
+            sendNotification($pdo, $receiver, "errand canceled", $message);
+            $stmt = $pdo->prepare("UPDATE `chat` SET `status`= 'closed' WHERE `errand_id` = :errand_id");
+            $stmt->execute(['errand_id' => $errand_Id]);
             exit;
         } else {
             http_response_code(200);
@@ -583,7 +552,7 @@ function changeStatus_Cancel($pdo){
 
     } catch(PDOException $e) {
         http_response_code(500);
-        echo json_encode(["error" => "Database query failed", "details" => $e->getMessage()]);
+        echo json_encode(["error" => "Database query failed"]);
         exit;
     }
 }

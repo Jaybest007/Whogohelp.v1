@@ -25,13 +25,17 @@ if($_SESSION['USER']['role'] !== 'admin'){
     exit;
 }
 
+$role = $_SESSION['USER']['role'];
 
 try{
     //get all user wallet
     $userwallet = $pdo->query('SELECT * FROM wallet')->fetchAll(PDO::FETCH_ASSOC);
 
     //get all users
-    $users = $pdo->query('SELECT * FROM users ')->fetchAll(PDO::FETCH_ASSOC);
+    $users = $pdo->query('SELECT role, full_name, username, email, phone, location, created_at, last_seen FROM users')->fetchAll(PDO::FETCH_ASSOC);
+
+    //get all chat
+    $chats = $pdo->query('SELECT * FROM `chat` WHERE `status` = "active" ')->fetchAll(PDO::FETCH_ASSOC);
 
     //get all errands
     $all_errands = $pdo->query('SELECT * FROM errands')->fetchAll(PDO::FETCH_ASSOC);
@@ -50,6 +54,8 @@ try{
     //get all errand that is canceled
     $canceled_errands = $pdo->query("SELECT * FROM `errands` WHERE `status` = 'canceled' ORDER BY `date` DESC, `time` DESC")->fetchAll(PDO::FETCH_ASSOC);
 
+    //get all errand with rejected status
+    $rejected_by_poster = $pdo->query("SELECT * FROM `errands` WHERE `status` = 'rejected_by_poster' ORDER BY `date` DESC, `time` DESC")->fetchAll(PDO::FETCH_ASSOC);
     
 
 
@@ -66,6 +72,8 @@ try{
         'completedErrands' => $completed_errands,
         'awaitingConfirmations' => $awaiting_confirmations,
         'canceledErrands' => $canceled_errands,
+        'rejectedByPoster' => $rejected_by_poster,
+        'AllChat' => $chats 
     ]);
 
 

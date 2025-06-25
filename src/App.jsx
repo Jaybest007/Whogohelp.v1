@@ -7,8 +7,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/ReactToastify.css'
 import WithNavbar from './layouts/WithNavbar'
 import ErrorBoundary from './components/ErrorBoundary';
-// import BrowseErrandsPage from './pages/BrowseErrandPage';
-// import Dashboard from './pages/Dashboard';
+import AdminRoute from './utilities/AdminRoute';
 
 
 const Landing = lazy(() => import('./pages/Landing'));
@@ -26,6 +25,7 @@ const Notifications = lazy(()=> import('./pages/Notifications'));
 const SuccessPreview = lazy (()=> import('./components/successPreview'));
 const AdminPanel = lazy( ()=> import('./pages/AdminPanel'));
 const ChatWindow = lazy( ()=> import ('./pages/ChatWindow'));
+const Errand = lazy( ()=> import('./pages/admin/Errand'));
 
 function App() {
   return (
@@ -69,16 +69,13 @@ function App() {
               <Route path='/contact' element={<ContactUs />} />
             </Route>
 
-            <Route
-              path='/admin'
-              element={
-                <ProtectedRoute>
-                  <AdminProvider>
-                    <AdminPanel />
-                  </AdminProvider>
-                </ProtectedRoute>
-              }
-            />
+            <Route path='/admin' element={<AdminProvider> <AdminRoute> <AdminPanel /></AdminRoute> </AdminProvider>}/>
+            <Route path='/admin/errand' element={<AdminProvider><AdminRoute><Errand/></AdminRoute></AdminProvider>}/> 
+                
+                 
+                
+                
+              
             <Route path="/logout" element={<Logout />} />
             <Route path="*" element={<PageNotFound />} />
           </Routes>
