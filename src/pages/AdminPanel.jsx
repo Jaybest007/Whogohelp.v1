@@ -4,9 +4,10 @@ import { useAdmin } from "../context/AdminContext";
 import AdminDashboardSkeleton from '../components/AdminSkeleton';
 import { Link } from "react-router-dom";
 import { IoChatboxEllipses } from "react-icons/io5";
-import SideBar from "../components/adminComponent/SideBar";
+import NavBar from "../components/adminComponent/NavBar";
 import SearchByUser from '../components/adminComponent/SearchUser';
 import SearchErrand from "../components/adminComponent/SearchErrand";
+import Overview from "../components/adminComponent/Overview";
 
 const AdminPanel = () => {
   useEffect( ()=> {
@@ -23,139 +24,67 @@ const AdminPanel = () => {
         fetchAdminData,
         loading,} = useAdmin();
   
-  const ActiveUsers = adminData && adminData.AllUsers
-    ? adminData.AllUsers.filter((user) => {
-        const lastSeenTime = new Date(user.last_seen).getTime(); 
-        const now = Date.now();
-        const twentyFourHours = 24 * 60 * 60 * 1000; 
-        return now - lastSeenTime < twentyFourHours;
-      }).length
-    : 0;
-  const walletRevenue = (adminData?.wallet ?? []).reduce((sum, wallet) => sum + parseFloat(wallet.balance || 0), 0);
-    
-
 
   if (loading && !adminData) return <AdminDashboardSkeleton />;
  
   return (
-    <div className="min-h-screen flex ">
-      {/* SideBar */}
-        <SideBar/>
+    <div className="min-h-screen bg-neutral-100">
+
+      {/* Nav bar */}
+        <NavBar/>
 
       {/* Main Content */ }
-        <main className="flex-1 bg-neutral-100 p-4 sm:p-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-orange-600 mb-6 sm:mb-8">Dashboard Overview</h1>
+        <main className="p-4 sm:p-6 max-w-7xl mx-auto ">
+          <div className="bg-white drop-shadow-xl p-6 rounded-xl">
+              <h1 className="text-2xl sm:text-3xl font-bold text-orange-600 mb-6 sm:mb-8">Dashboard Overview</h1>
 
           {/* Dashboard Metrics */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-6">
-            {/* Users */}
-            <div className="bg-gradient-to-tr from-orange-100 to-orange-200 rounded-lg shadow flex flex-col items-center justify-center p-4 group hover:scale-105 transition-transform duration-200 min-w-[100px] min-h-[100px]">
-          <div className="bg-orange-500 text-white rounded-full p-3 mb-2 shadow">
-            <FaUsers size={22} />
-          </div>
-          <h2 className="text-base font-semibold text-gray-700 mb-1">Users</h2>
-          <p className="text-2xl font-bold text-orange-600">{adminData?.AllUsers?.length ?? 0}</p>
-            </div>
-            {/* Active Users */}
-            <div className="bg-gradient-to-tr from-green-100 to-green-200 rounded-lg shadow flex flex-col items-center justify-center p-4 group hover:scale-105 transition-transform duration-200 min-w-[100px] min-h-[100px]">
-          <div className="bg-green-500 text-white rounded-full p-3 mb-2 shadow">
-            <FaUserTie size={22} />
-          </div>
-          <h2 className="text-base font-semibold text-gray-700 mb-1">Active</h2>
-          <p className="text-2xl font-bold text-green-600">{ActiveUsers}</p>
-            </div>
-            {/* Wallet Revenue */}
-            <div className="bg-gradient-to-tr from-yellow-100 to-yellow-200 rounded-lg shadow flex flex-col items-center justify-center p-4 group hover:scale-105 transition-transform duration-200 min-w-[100px] min-h-[100px]">
-          <div className="bg-yellow-500 text-white rounded-full p-3 mb-2 shadow">
-            <FaWallet size={22} />
-          </div>
-          <h2 className="text-base font-semibold text-gray-700 mb-1">Revenue</h2>
-          <p className="text-lg font-bold text-yellow-600">{(walletRevenue || 0).toLocaleString('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 })}</p>
-            </div>
-            {/* Pending Errands */}
-            <div className="bg-gradient-to-tr from-blue-100 to-blue-200 rounded-lg shadow flex flex-col items-center justify-center p-4 group hover:scale-105 transition-transform duration-200 min-w-[100px] min-h-[100px]">
-          <div className="bg-blue-500 text-white rounded-full p-3 mb-2 shadow">
-            <FaTasks size={22} />
-          </div>
-          <h2 className="text-base font-semibold text-gray-700 mb-1">Pending</h2>
-          <p className="text-2xl font-bold text-blue-600">{adminData?.pendingErrands?.length ?? 0}</p>
-            </div>
-          </div>
+          <Overview/>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-6">
-            {/* Ongoing Errands */}
-            <div className="bg-gradient-to-tr from-purple-100 to-purple-200 rounded-lg shadow flex flex-col items-center justify-center p-4 group hover:scale-105 transition-transform duration-200 min-w-[100px] min-h-[100px]">
-          <div className="bg-purple-500 text-white rounded-full p-3 mb-2 shadow">
-            <FaTasks size={22} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+        {/* Search by User */}
+        <details className="group bg-white rounded-lg shadow border border-gray-200 overflow-hidden transition-all">
+          <summary className="flex items-center gap-2 px-5 py-4 cursor-pointer bg-gray-100 text-gray-700 font-semibold text-base group-open:rounded-t-lg group-open:bg-orange-50 hover:bg-gray-200 transition-all">
+            <span className="inline-block w-2 h-2 rounded-full bg-orange-400 mr-2"></span>
+            Search by User
+            <span className="ml-auto transition-transform group-open:rotate-90 text-gray-500">&#9654;</span>
+          </summary>
+          <div className="px-5 pb-5 pt-2">
+            <label htmlFor="search-user" className="block text-sm font-medium text-gray-600 mb-2">
+              Enter username:
+            </label>
+            <SearchByUser
+              id="search-user"
+              className="w-full px-4 py-2 rounded-lg shadow-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition"
+              placeholder="Enter username..."
+            />
           </div>
-          <h2 className="text-base font-semibold text-gray-700 mb-1">Ongoing</h2>
-          <p className="text-2xl font-bold text-purple-600">{adminData?.ongoingErrands?.length ?? 0}</p>
-            </div>
-            {/* Completed Errands */}
-            <div className="bg-gradient-to-tr from-green-100 to-green-200 rounded-lg shadow flex flex-col items-center justify-center p-4 group hover:scale-105 transition-transform duration-200 min-w-[100px] min-h-[100px]">
-          <div className="bg-green-600 text-white rounded-full p-3 mb-2 shadow">
-            <FaTasks size={22} />
-          </div>
-          <h2 className="text-base font-semibold text-gray-700 mb-1">Completed</h2>
-          <p className="text-2xl font-bold text-green-700">{adminData?.completedErrands?.length ?? 0}</p>
-            </div>
-            {/* Rejected Errands by Poster */}
-            <div className="bg-gradient-to-tr from-red-100 to-red-200 rounded-lg shadow flex flex-col items-center justify-center p-4 group hover:scale-105 transition-transform duration-200 min-w-[100px] min-h-[100px]">
-          <div className="bg-red-500 text-white rounded-full p-3 mb-2 shadow">
-            <FaBan size={22} />
-          </div>
-          <h2 className="text-base font-semibold text-gray-700 mb-1">Rejected</h2>
-          <p className="text-2xl font-bold text-red-600">{adminData?.rejectedByPoster?.length ?? 0}</p>
-            </div>
-            {/* Active Chats */}
-            <div className="bg-gradient-to-tr from-indigo-100 to-indigo-200 rounded-lg shadow flex flex-col items-center justify-center p-4 group hover:scale-105 transition-transform duration-200 min-w-[100px] min-h-[100px]">
-          <div className="bg-indigo-500 text-white rounded-full p-3 mb-2 shadow">
-            <IoChatboxEllipses size={22} />
-          </div>
-          <h2 className="text-base font-semibold text-gray-700 mb-1">Chats</h2>
-          <p className="text-2xl font-bold text-indigo-600">{adminData?.AllChat?.length ?? 0}</p>
-            </div>
-          </div>
+        </details>
 
-          <div className="w-full flex flex-col sm:flex-row gap-4 mt-6 mb-4">
-            {/* Search by User */}
-            <div className="flex-1 bg-white rounded-lg shadow p-4 flex flex-col">
-              <h3 className="text-sm font-semibold text-gray-700 mb-2">Search by User</h3>
-              <SearchByUser />
-            </div>
-            {/* Search by Errand */}
-            <div className="flex-1 bg-white rounded-lg shadow p-4 flex flex-col">
-              <h3 className="text-sm font-semibold text-gray-700 mb-2">Search by Errand</h3>
-              <SearchErrand />
-            </div>
+        {/* Search by Errand */}
+        <details className="group bg-white rounded-lg shadow border border-gray-200 overflow-hidden transition-all">
+          <summary className="flex items-center gap-2 px-5 py-4 cursor-pointer bg-gray-100 text-gray-700 font-semibold text-base group-open:rounded-t-lg group-open:bg-orange-50 hover:bg-gray-200 transition-all">
+            <span className="inline-block w-2 h-2 rounded-full bg-blue-400 mr-2"></span>
+            Search by Errand
+            <span className="ml-auto transition-transform group-open:rotate-90 text-gray-500">&#9654;</span>
+          </summary>
+          <div className="px-5 pb-5 pt-2">
+            <label htmlFor="search-errand" className="block text-sm font-medium text-gray-600 mb-2">
+              Errand ID:
+            </label>
+            <SearchErrand
+              id="search-errand"
+              className="w-full px-4 py-2 rounded-lg shadow-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition"
+              placeholder="Search Errand ID..."
+            />
           </div>
-        
+        </details>
+      </div>
+
           
+          {/* ================ */}
+          </div>
          
-        
-        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md mt-6 overflow-x-auto">
-          <h2 className="text-base sm:text-xl font-bold text-gray-700 mb-4">Pending Errands</h2>
-          <table className="w-full border-collapse text-sm sm:text-base">
-            <thead>
-              <tr className="bg-gray-200 text-gray-700">
-                <th className="p-2 sm:p-3 text-left">Errand ID</th>
-                <th className="p-2 sm:p-3 text-left">Posted by</th>
-                <th className="p-2 sm:p-3 text-left">Reason</th>
-                <th className="p-2 sm:p-3 text-left">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {adminData?.pendingErrands?.map((errands, index) => (
-                <tr className="border-b" key={index}>
-                  <td className="p-2 sm:p-3">{errands.errand_Id}</td>
-                  <td className="p-2 sm:p-3">{errands.posted_by}</td>
-                  <td className="p-2 sm:p-3">{errands.title}</td>
-                  <td className="p-2 sm:p-3 text-yellow-500 font-semibold">{errands.status}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div> 
       </main>
     </div>
   );

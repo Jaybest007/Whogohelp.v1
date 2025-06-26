@@ -1,8 +1,8 @@
  import React from "react";
- import SideBar from "../../components/adminComponent/SideBar";
+import NavBar from "../../components/adminComponent/NavBar";
  import SearchUser from "../../components/adminComponent/SearchUser";
  import { useAdmin } from "../../context/AdminContext";
-
+import StatCard from "../../components/adminComponent/StatCard";
 import { FaUsers, FaUserTie } from "react-icons/fa";
 import NewUser from "../../components/adminComponent/NewUser";
 
@@ -22,31 +22,35 @@ import NewUser from "../../components/adminComponent/NewUser";
 
 
         return (
-            <div className="min-h-screen flex">
-                <SideBar/>
-
-                <div className="flex-1 bg-neutral-100 p-4 sm:p-6">
-                    <h2 className="text-4xl font-bold text-neutral-800 mb-6">User Page</h2>
-
-                    <div className="w-full mt-2 p-5 bg-white rounded-xl ml-auto">
+            <div className="min-h-screen bg-neutral-100">
+                <NavBar/>
+            <main className="p-3 sm:p-6 max-w-7xl mx-auto">
+                
+                    <div className="w-full  p-5 bg-white rounded-xl ml-auto">
+                        <h2 className="text-3xl font-bold text-neutral-800 mb-6">User Page</h2>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-6">
-                            {/* user */}
-                            <div className="bg-gradient-to-tr from-orange-100 to-orange-200 rounded-lg shadow flex flex-col items-center justify-center p-4 group hover:scale-105 transition-transform duration-200 min-w-[100px] min-h-[100px]">
-                                <div className="bg-orange-500 text-white rounded-full p-3 mb-2 shadow">
-                                    <FaUsers size={22} />
-                                </div>
-                                <h2 className="text-base font-semibold text-gray-700 mb-1">Users</h2>
-                                <p className="text-2xl font-bold text-orange-600">{adminData?.AllUsers?.length ?? 0}</p>
-                            </div>
+                        {/* user */}
+                        <StatCard
+                            title="Total Users"
+                            icon={<FaUsers size={22} />}
+                            value={adminData?.AllUsers?.length ?? 0}
+                            bgFrom="from-green-100"
+                            bgTo="to-green-200"
+                            iconBg="bg-green-500"
+                            textColor="text-green-600"
+                        />
+                        {/* Active Users */}
+                        <StatCard
+                            title="Active Users"
+                            icon={<FaUserTie size={22} />}
+                            value={ActiveUsers}
+                            bgFrom="from-blue-100"
+                            bgTo="to-blue-200"
+                            iconBg="bg-blue-500"
+                            textColor="text-blue-600"
+                        />
 
-                            {/* active */}
-                            <div className="bg-gradient-to-tr from-green-100 to-green-200 rounded-lg shadow flex flex-col items-center justify-center p-4 group hover:scale-105 transition-transform duration-200 min-w-[100px] min-h-[100px]">
-                            <div className="bg-green-500 text-white rounded-full p-3 mb-2 shadow">
-                                <FaUserTie size={22} />
-                            </div>
-                            <h2 className="text-base font-semibold text-gray-700 mb-1">Active</h2>
-                            <p className="text-2xl font-bold text-green-600">{ActiveUsers}</p>
-                                </div>
+
                         </div>
 
                         <div className="justify-end">
@@ -58,7 +62,9 @@ import NewUser from "../../components/adminComponent/NewUser";
                         <NewUser/>
                         
                     </div>
-                </div>
+                
+            </main>
+                
             </div>
         
         )

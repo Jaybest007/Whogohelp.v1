@@ -12,8 +12,8 @@ const SearchErrand = () => {
 
     
     return (
-      <div>
-         <div className="relative w-full sm:w-1/3">
+      <div className="w-full">
+         <div className="relative w-full">
           <input
             type="text"
             placeholder="Search Errand ID..."
