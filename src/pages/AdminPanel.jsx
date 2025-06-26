@@ -8,6 +8,9 @@ import NavBar from "../components/adminComponent/NavBar";
 import SearchByUser from '../components/adminComponent/SearchUser';
 import SearchErrand from "../components/adminComponent/SearchErrand";
 import Overview from "../components/adminComponent/Overview";
+import RefreshBtn from "../components/adminComponent/RefreshBtn";
+
+
 
 const AdminPanel = () => {
   useEffect( ()=> {
@@ -36,10 +39,12 @@ const AdminPanel = () => {
       {/* Main Content */ }
         <main className="p-4 sm:p-6 max-w-7xl mx-auto ">
           <div className="bg-white drop-shadow-xl p-6 rounded-xl">
-              <h1 className="text-2xl sm:text-3xl font-bold text-orange-600 mb-6 sm:mb-8">Dashboard Overview</h1>
+            <RefreshBtn styling={"bg-gray-500 float-right text-white mb-4"} />
+            <h1 className="text-2xl sm:text-3xl font-bold text-orange-600 mb-6 sm:mb-8">Dashboard Overview</h1>
 
           {/* Dashboard Metrics */}
           <Overview/>
+
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
         {/* Search by User */}

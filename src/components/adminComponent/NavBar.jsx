@@ -9,6 +9,7 @@ import {
   FaPowerOff,
   FaBars,
   FaTimes,
+  FaEnvelope,
 } from "react-icons/fa";
 
 const NavBar = () => {
@@ -20,6 +21,7 @@ const NavBar = () => {
     { to: "/admin/errand", icon: <FaTasks />, label: "Errands" },
     { to: "/admin/user", icon: <FaUsers />, label: "Users" },
     { to: "#", icon: <FaWallet />, label: "Wallet" },
+    { to: "/admin/messages", icon: <FaEnvelope />, label: "Messages" },
     { to: "#", icon: <FaCog />, label: "Settings" },
     { to: "/logout", icon: <FaPowerOff />, label: "Logout" },
   ];

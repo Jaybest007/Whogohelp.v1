@@ -27,7 +27,7 @@ const AdminPanel = lazy( ()=> import('./pages/AdminPanel'));
 const ChatWindow = lazy( ()=> import ('./pages/ChatWindow'));
 const Errand = lazy( ()=> import('./pages/admin/Errand'));
 const User  = lazy ( ()=> import('./pages/admin/User'));
-
+const Messages = lazy( ()=> import('./pages/admin/Messages'));
 
 
 
@@ -77,6 +77,7 @@ function App() {
             <Route path='/admin' element={<AdminProvider> <AdminRoute> <AdminPanel /></AdminRoute> </AdminProvider>}/>
             <Route path='/admin/errand' element={<AdminProvider><AdminRoute><Errand/></AdminRoute></AdminProvider>}/> 
             <Route path='/admin/user' element={<AdminProvider><AdminRoute><User/></AdminRoute></AdminProvider>}/> 
+            <Route path='/admin/messages' element={<AdminProvider><AdminRoute><Messages/></AdminRoute></AdminProvider>}/> 
                 
                  
                 
