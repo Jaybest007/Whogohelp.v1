@@ -31,6 +31,9 @@ const Messages = lazy( ()=> import('./pages/admin/Messages'));
 const AdminWallet = lazy( ()=> import('./pages/admin/Wallet'));
 const AdminSettings = lazy( ()=> import('./pages/admin/Settings'));
 const UserSettings = lazy( ()=> import('./pages/Settings'));
+const MaintainanceMode = lazy(() => import('./components/MaintainanceMode'));
+
+
 
 function App() {
   return (
@@ -68,6 +71,7 @@ function App() {
               <Route path='/notification' element={<ProtectedRoute> <Notifications /> </ProtectedRoute>} />
               <Route path='/chat/:chat_id/:receiver' element={<ProtectedRoute> <ChatWindow /> </ProtectedRoute>} />
               <Route path='/settings' element={<ProtectedRoute> <UserSettings /> </ProtectedRoute>} />
+              <Route path='/maintainance' element={<ProtectedRoute><MaintainanceMode /></ProtectedRoute>} />
               <Route path="/success-preview" element={<SuccessPreview />} />
               <Route path='/about' element={<AboutUs />} />
               <Route path='/signup' element={<Signup />} />

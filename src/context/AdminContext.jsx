@@ -15,7 +15,7 @@ export const AdminProvider = ({ children }) => {
   const { clearDashboardData } = useDashboard();
   const navigate = useNavigate();
   const [messages, setMessages] = useState()
-  
+  const [adminSettings, setAdminSettings] = useState(null)
 
 
 //fetch data
@@ -28,6 +28,7 @@ export const AdminProvider = ({ children }) => {
       });
 
       setAdminData(res.data);
+      setAdminSettings(res.data.Settings);
       lastFetched.current = Date.now();
     } catch (err) {
       if (err.response?.status === 401) {
@@ -40,7 +41,7 @@ export const AdminProvider = ({ children }) => {
   }, [clearDashboardData]);
 
   useEffect(() => {
-    if (!adminData){
+    if (!adminData ){
       fetchAdminData();
     }
   }, [adminData, fetchAdminData]);
@@ -50,7 +51,7 @@ export const AdminProvider = ({ children }) => {
   const take_action = useCallback(async (username, type) => {
     try {
       const res = await axios.post(
-        "api/admin_actions.php",
+        "http://localhost/api/admin_actions.php",
         { action: "take_action", username , type },
         {
           withCredentials: true,
@@ -121,7 +122,7 @@ const errand_action = useCallback(async (errand_id, action_type) => {
     setLoading(true);
     try {
       const res = await axios.post(
-        "http://localhost/api/admin_settings.php",
+        "http://localhost/api/admin_actions.php",
         {action: "settings", maintenance_mode, withdrawal_limit, announcement },
         {
           withCredentials: true,
@@ -155,7 +156,8 @@ const errand_action = useCallback(async (errand_id, action_type) => {
         take_action,
         errand_action,
         markMessageAsRead,
-        updateAdminsettings
+        updateAdminsettings,
+        adminSettings
       }}
     >
       {children}

@@ -22,6 +22,7 @@ export const DashboardProvider = ({ children }) => {
   const [walletActionMode, setWalletActionMode] = useState(null);
   const [loading, setLoading] = useState(true);
   const [filterBased, setFilterBased] = useState("global");
+  const [adminSettings, setAdminSettings] = useState(null);
 
   const location = useLocation();
   const isUserActive = useRef(false);
@@ -53,6 +54,7 @@ export const DashboardProvider = ({ children }) => {
             ...prev,
             ...res.data
           }));
+          setAdminSettings(res.data.AdminSettings || null);
           lastFetched.current = Date.now();
         }
       })
@@ -105,6 +107,8 @@ export const DashboardProvider = ({ children }) => {
       .catch((err) => console.error("Wallet refresh error:", err));
   }, [isAuthenticated]);
 
+
+  // ===fetch chat=======
   const fetchChat = useCallback((errandId) => {
     axios
       .post(
@@ -119,6 +123,7 @@ export const DashboardProvider = ({ children }) => {
       .catch((err) => console.error("Chat fetch error:", err));
   }, []);
 
+  // ===refresh======
   const smartRefresh = useCallback(() => {
     if (!isAuthenticated || !dashboardData) return;
     const now = Date.now();
@@ -187,6 +192,7 @@ export const DashboardProvider = ({ children }) => {
     };
   }, [isAuthenticated]);
 
+  //for wallet action=====
   useEffect(() => {
     if (!isAuthenticated) return;
     if (!location.pathname.includes("/transactions")) {
@@ -194,6 +200,8 @@ export const DashboardProvider = ({ children }) => {
     }
   }, [location, isAuthenticated]);
 
+
+  //====clear notifications====
   useEffect(() => {
     if (!isAuthenticated) return;
     if (!location.pathname.includes("/notification")) {
@@ -227,7 +235,8 @@ export const DashboardProvider = ({ children }) => {
         setWalletActionMode,
         filterBased,
         setFilterBased,
-        unreadCount
+        unreadCount,
+        adminSettings,
       }}
     >
       {children}
