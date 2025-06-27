@@ -86,7 +86,7 @@ function Signup() {
     }
 
     try {
-        const response = await fetch("http://localhost/api//signup.php", { //  Fix API endpoint
+        const response = await fetch("http://localhost/api/signup.php", { //  Fix API endpoint
             method: "POST",
             credentials: 'include',
             headers: { "Content-Type": "application/json" },

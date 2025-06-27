@@ -14,6 +14,7 @@ import {
   FaUserPlus
 } from "react-icons/fa";
 import { useDashboard } from "../context/DashboardContext";
+import { FiSettings } from "react-icons/fi";
 
 export default function Navbar() {
   const { dashboardData, notifications, unreadCount } = useDashboard();
@@ -31,7 +32,8 @@ export default function Navbar() {
         { to: "/errands", label: "Errands", icon: <FaTasks /> },
         { to: "/transactions", label: "Transactions", icon: <FaMoneyCheckAlt /> },
         { to: `/profile/${dashboardData?.username}`, label: "Profile", icon: <FaUser /> },
-        { to: "/contact", label: "Contact Us", icon: <FaEnvelope /> }
+        { to: "/contact", label: "Contact Us", icon: <FaEnvelope /> },
+        { to: "/settings", label: "Settings", icon: <FiSettings /> }
       ]
     : [
         { to: "/login", label: "Login", icon: <FaSignInAlt /> },

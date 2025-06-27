@@ -7,7 +7,7 @@ import { Routes, Route } from "react-router-dom";
 import RefreshBtn from "../../components/adminComponent/RefreshBtn";
 
 const Messages = () => {
-  const { adminData, fetchAdminData, markMessageAsRead  } = useAdmin();
+  const { adminData, markMessageAsRead  } = useAdmin();
 
   return (
     <div className=" items-center justify-center min-h-screen bg-gray-100">

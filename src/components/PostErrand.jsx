@@ -48,7 +48,7 @@ async function handleSubmit(event) {
   }
 
   try {
-    const response = await fetch("http://localhost/api//post_errand.php", {
+    const response = await fetch("http://localhost/api/post_errand.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

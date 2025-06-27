@@ -65,7 +65,7 @@ const Errand = () => {
                 <StatCard
                 title="Awaiting Confirmation"
                 icon={<FaTasks size={22} />}
-                value={adminData?.ongoingErrands?.length ?? 0}
+                value={adminData?.awaitingConfirmations?.length ?? 0}
                 bgFrom="from-purple-100"
                 bgTo="to-purple-200"
                 iconBg="bg-purple-500"

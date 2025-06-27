@@ -29,8 +29,8 @@ const Errand = lazy( ()=> import('./pages/admin/Errand'));
 const User  = lazy ( ()=> import('./pages/admin/User'));
 const Messages = lazy( ()=> import('./pages/admin/Messages'));
 const AdminWallet = lazy( ()=> import('./pages/admin/Wallet'));
-
-
+const AdminSettings = lazy( ()=> import('./pages/admin/Settings'));
+const UserSettings = lazy( ()=> import('./pages/Settings'));
 
 function App() {
   return (
@@ -67,6 +67,7 @@ function App() {
               <Route path='/transactions' element={<ProtectedRoute> <TransactionHistory /> </ProtectedRoute>} />
               <Route path='/notification' element={<ProtectedRoute> <Notifications /> </ProtectedRoute>} />
               <Route path='/chat/:chat_id/:receiver' element={<ProtectedRoute> <ChatWindow /> </ProtectedRoute>} />
+              <Route path='/settings' element={<ProtectedRoute> <UserSettings /> </ProtectedRoute>} />
               <Route path="/success-preview" element={<SuccessPreview />} />
               <Route path='/about' element={<AboutUs />} />
               <Route path='/signup' element={<Signup />} />
@@ -79,8 +80,8 @@ function App() {
             <Route path='/admin/user' element={<AdminProvider><AdminRoute><User/></AdminRoute></AdminProvider>}/> 
             <Route path='/admin/messages' element={<AdminProvider><AdminRoute><Messages/></AdminRoute></AdminProvider>}/> 
             <Route path='/admin/wallet' element={<AdminProvider><AdminRoute><AdminWallet/></AdminRoute></AdminProvider>}/>    
-                 
-                
+            <Route path='/admin/settings' element={<AdminProvider><AdminRoute><AdminSettings/></AdminRoute></AdminProvider>}/>    
+              
                 
               
             <Route path="/logout" element={<Logout />} />

@@ -22,7 +22,7 @@ export const AdminProvider = ({ children }) => {
   const fetchAdminData = useCallback( async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost/api//admin.php", {
+      const res = await axios.get("http://localhost/api/admin.php", {
         withCredentials: true,
         headers: { "Content-Type": "application/json" },
       });
@@ -46,6 +46,7 @@ export const AdminProvider = ({ children }) => {
   }, [adminData, fetchAdminData]);
 
 
+  // =====to cancel and complete errand====
   const take_action = useCallback(async (username, type) => {
     try {
       const res = await axios.post(
@@ -72,7 +73,7 @@ export const AdminProvider = ({ children }) => {
 const errand_action = useCallback(async (errand_id, action_type) => {
     try {
       const res = await axios.post(
-        "http://localhost/api//admin_actions.php",
+        "http://localhost/api/admin_actions.php",
         { action: "errand_action", errand_id, action_type },
         {
           withCredentials: true,
@@ -96,7 +97,7 @@ const errand_action = useCallback(async (errand_id, action_type) => {
   const markMessageAsRead = useCallback(async (id) => {
     try {
       const res = await axios.post(
-        "http://localhost/api//admin_actions.php",
+        "http://localhost/api/admin_actions.php",
         { action: "mark_message_as_read", id },
         {
           withCredentials: true,
@@ -115,6 +116,30 @@ const errand_action = useCallback(async (errand_id, action_type) => {
   }, [fetchAdminData]);
 
 
+  // ====Admin Settings =====
+  const updateAdminsettings = useCallback(async (maintenance_mode, withdrawal_limit, announcement) => {
+    setLoading(true);
+    try {
+      const res = await axios.post(
+        "http://localhost/api/admin_settings.php",
+        {action: "settings", maintenance_mode, withdrawal_limit, announcement },
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      if (res.data.success) {
+        toast.success(res.data.message);
+        fetchAdminData(); 
+      } else {
+        toast.error(res.data.message || "Failed to update settings.");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.error || "An error occurred while updating settings.");
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchAdminData]);
 
 
 
@@ -130,6 +155,7 @@ const errand_action = useCallback(async (errand_id, action_type) => {
         take_action,
         errand_action,
         markMessageAsRead,
+        updateAdminsettings
       }}
     >
       {children}

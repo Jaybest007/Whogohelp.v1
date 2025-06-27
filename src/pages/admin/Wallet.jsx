@@ -73,7 +73,7 @@ const Wallet = () => {
             </thead>
             <tbody className="bg-[#1f2937] divide-y divide-gray-700">
                 {adminData?.transaction_history?.map((transaction, index) => (
-                <tr index={index}>
+                <tr key={index}>
                 <td className="px-4 py-3 font-mono text-orange-300">{transaction.transaction_id}</td>
                 <td className="px-4 py-3">{transaction.username}</td>
                 <td className="px-4 py-3">{transaction.errand_Id}</td>

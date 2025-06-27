@@ -144,6 +144,10 @@ const ErrandDetailModal = ({
       )}
 
       {!showCancelConfirm && (
+
+        <div className="max-h-[80vh] overflow-y-auto">
+  {/* Your errand detail card goes here */}
+
         
       <div className="bg-gray-900 border border-orange-500 rounded-lg shadow-lg w-full max-w-md px-6 py-5">
        <div className="flex items-center justify-between mb-6">
@@ -244,6 +248,7 @@ const ErrandDetailModal = ({
             )}
         </div>
       </div>
+    
 
         
         {/* === ACTION BUTTONS SECTION === */}
@@ -348,7 +353,9 @@ const ErrandDetailModal = ({
         </div>
 
       </div>
+      </div>
       )}
+      
     </div>
   );
 };
