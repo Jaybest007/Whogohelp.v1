@@ -17,6 +17,7 @@ if(!isset($_SESSION['USER'])){
 };
 include 'db_connect.php';
 
+
 $data = json_decode(file_get_contents("php://input"), true);
 
 if($data === null){
@@ -49,6 +50,38 @@ function generateTransactionId($errand_Id){
     $random = substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ23456789'),0,5);
     return "TX-{$date}-{$errand_Id}-{$random}";
 };
+
+/**
+ * Log a transaction for a user.
+ *
+ * @param PDO $pdo
+ * @param string $transaction_id
+ * @param string $username
+ * @param string $errand_Id
+ * @param float $amount
+ * @param string $type
+ * @param string $description
+ * @return bool
+ */
+function logTransaction($pdo, $transaction_id, $username, $errand_Id, $amount, $type, $description) {
+    try {
+        $sql = "INSERT INTO `transactions`(`transaction_id`, `username`, `errand_Id`, `amount`, `type`, `description`) 
+                VALUES (:transaction_id, :username, :errand_Id, :amount, :type, :description)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'transaction_id' => $transaction_id,
+            'username' => $username,
+            'errand_Id' => $errand_Id,
+            'amount' => $amount,
+            'type' => $type,
+            'description' => $description
+        ]);
+        return $stmt->rowCount() > 0;
+    } catch (PDOException $e) {
+        error_log("Transaction log error: " . $e->getMessage());
+        return false;
+    }
+}
 
 //===PICK UP CODE GENERATION====
 $pickupCode = str_pad(rand(0, 9999), 4,'0',STR_PAD_LEFT);
@@ -87,22 +120,12 @@ if($stmt2->rowCount() > 0){
     $stmtUpdateBalance->execute(['username' => $posted_by, 'balance' => $newBalance]);
     if($stmtUpdateBalance->rowCount() > 0){
 
-        // Insert the transaction in transaction table
+        // Insert the transaction in transaction table using the reusable function
         $transactionDescription = "Debit for the errand " . $errand_Id;
         $transaction_id = generateTransactionId($errand_Id);
-        $sqlInsertTransaction = "INSERT INTO `transactions` (`transaction_id`,`username`, `errand_Id`, `amount`, `type`, `description`) 
-                                VALUES (:transaction_id,:username, :errand_Id, :amount, :type, :description)";
-        $stmtInsertTransaction = $pdo->prepare($sqlInsertTransaction);
-        $stmtInsertTransaction->execute([
-            'transaction_id' => $transaction_id,
-            "username"=> $posted_by,
-            "errand_Id" => $errand_Id,
-            "amount" => $reward,
-            "type" => "debit",
-            "description" => $transactionDescription
-        ]);
+        $transactionLogged = logTransaction($pdo, $transaction_id, $posted_by, $errand_Id, $reward, "debit", $transactionDescription);
 
-        if($stmtInsertTransaction->rowCount() > 0){
+        if($transactionLogged){
             // Insert errand
             $sqlPost = "INSERT INTO errands (errand_Id, date, time, title, description, pick_up_location, drop_off_location, reward, notes, posted_by, status, pickup_code) 
                         VALUES (:errand_Id, :date, :time, :title, :description, :pick_up_location, :drop_off_location, :reward, :notes, :posted_by, :status, :pickup_code)";

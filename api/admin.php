@@ -31,11 +31,18 @@ try{
     //get all user wallet
     $userwallet = $pdo->query('SELECT * FROM wallet')->fetchAll(PDO::FETCH_ASSOC);
 
+    //get all transaction within 24hrs
+    $transactionHistory = $pdo->query('SELECT * FROM `transactions` WHERE `created_at` >= NOW() - INTERVAL 1 DAY ORDER BY `created_at` DESC')->fetchAll(PDO::FETCH_ASSOC);
+
+
     //get all users
-    $users = $pdo->query('SELECT role, full_name, username, email, phone, location, created_at, last_seen FROM users')->fetchAll(PDO::FETCH_ASSOC);
+    $users = $pdo->query('SELECT role, status, full_name, username, email, phone, location, created_at, last_seen FROM users')->fetchAll(PDO::FETCH_ASSOC);
 
     //get all chat
     $chats = $pdo->query('SELECT * FROM `chat` WHERE `status` = "active" ')->fetchAll(PDO::FETCH_ASSOC);
+
+    //get all messages
+    $messages = $pdo->query("SELECT * FROM `contact_us`")->fetchAll(PDO::FETCH_ASSOC);
 
     //get all errands
     $all_errands = $pdo->query('SELECT * FROM errands')->fetchAll(PDO::FETCH_ASSOC);
@@ -57,6 +64,8 @@ try{
     //get all errand with rejected status
     $rejected_by_poster = $pdo->query("SELECT * FROM `errands` WHERE `status` = 'rejected_by_poster' ORDER BY `date` DESC, `time` DESC")->fetchAll(PDO::FETCH_ASSOC);
     
+    //get admin seetings
+    $Settings = $pdo->query("SELECT * FROM `admin_settings` WHERE `id` = 1")->fetch(PDO::FETCH_ASSOC);
 
 
     //send all data as JSON
@@ -66,6 +75,8 @@ try{
         'role' => 'admin',
         'wallet' => $userwallet,
         'AllUsers' => $users,
+        'transaction_history' => $transactionHistory,
+        "AllMessages" => $messages,
         'AllErrands' => $all_errands,
         'pendingErrands' => $pending_errands,
         'ongoingErrands' => $ongoing_errands,
@@ -73,7 +84,8 @@ try{
         'awaitingConfirmations' => $awaiting_confirmations,
         'canceledErrands' => $canceled_errands,
         'rejectedByPoster' => $rejected_by_poster,
-        'AllChat' => $chats 
+        'AllChat' => $chats ,
+        'Settings' => $Settings
     ]);
 
 

@@ -21,7 +21,15 @@ if(!isset($_SESSION['USER'])){
 
 $username = $_SESSION['USER']['username'];
 $role = $_SESSION['USER']['role'];
+
+
 try{
+
+    //get user status
+    $stmt = $pdo->prepare('SELECT `status` FROM users WHERE `username` = :username');
+    $stmt->execute(['username' => $username]);
+    $user_status = $stmt->fetch(PDO::FETCH_ASSOC);
+    
     //get wallet balance
     $stmt = $pdo->prepare('SELECT `balance` FROM `wallet` WHERE `username` = :username');
     $stmt->execute(['username' => $username]);
@@ -47,6 +55,8 @@ try{
     $stmt->execute(["user"=> $username]);
     $awaiting_confirmations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    //FETCH ADMIN CUSTOM SETTINGS
+    $Settings = $pdo->query("SELECT * FROM `admin_settings` WHERE `id` = 1")->fetch(PDO::FETCH_ASSOC);
     
 
 
@@ -56,11 +66,13 @@ try{
         'loggedIn' => true,
         'username' => $username,
         'role' => $role,
+        'userStatus' => $user_status,
         'walletBalance' => $walletBalance,
         'ongoingErrands' => $ongoing_errands,
         'completedErrands' => $completed_errands,
         'availableErrands' => $available_errands,
-        'awaiting_confirmations' => $awaiting_confirmations
+        'awaiting_confirmations' => $awaiting_confirmations,
+        'AdminSettings' => $Settings,
     ]);
 
 

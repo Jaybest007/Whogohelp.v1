@@ -45,6 +45,9 @@ try {
         echo json_encode(['server' => ["server" => 'Unable to send your message']]);
     }
 } catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode(["error" => "Database error: " . $e->getMessage()]);
+    error_log("Dashboard data error: " . $e->getMessage());
+    echo json_encode([
+        'success' => false,
+        'message' => 'Error fetching dashboard data'
+    ]);
 }

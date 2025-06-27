@@ -47,7 +47,7 @@ export const AdminProvider = ({ children }) => {
   }, [adminData, fetchAdminData]);
 
 
-  // =====to cancel and complete errand====
+  // =====to ban and unban user====
   const take_action = useCallback(async (username, type) => {
     try {
       const res = await axios.post(
@@ -60,14 +60,15 @@ export const AdminProvider = ({ children }) => {
       );
       if (res.data.success) {
         toast.success(res.data.message);
-        fetchAdminData(); 
+        
       } else {
         toast.error(res.data.message || "Failed to ban user.");
+         
       }
     } catch (err) {
       toast.error(err.response?.data?.error || "An error occurred while banning user.");
     }
-  }, [fetchAdminData]);
+  }, []);
 
 
   // =====TO CANCEL ERRAND OR COMPLETE ERRAND====
@@ -142,6 +143,31 @@ const errand_action = useCallback(async (errand_id, action_type) => {
     }
   }, [fetchAdminData]);
 
+  // =====impersonate user =====
+
+  const impersonateUser = useCallback(async (username) => {
+    setLoading(true);
+    try {
+      const res = await axios.post(
+        "http://localhost/api/admin_actions.php",
+        { action: "user_impersonation", username },
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      if (res.data.success) {
+        toast.success(res.data.message);
+        navigate("/dashboard");
+      } else {
+        toast.error(res.data.message || "Failed to impersonate user.");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.error || "An error occurred while impersonating user.");
+    } finally {
+      setLoading(false);
+    }
+  }, [navigate]);
 
 
 
@@ -157,7 +183,8 @@ const errand_action = useCallback(async (errand_id, action_type) => {
         errand_action,
         markMessageAsRead,
         updateAdminsettings,
-        adminSettings
+        adminSettings,
+        impersonateUser,
       }}
     >
       {children}

@@ -4,12 +4,12 @@ import RefreshBtn from '../../components/adminComponent/RefreshBtn';
 import { useAdmin } from '../../context/AdminContext';
 
 const Settings = () => {
-    const { updateAdminsettings, adminSettings, loading } = useAdmin();
+    const { updateAdminsettings, adminSettings, loading, impersonateUser } = useAdmin();
 
     const [maintenance, setMaintenance] = useState(false);
     const [newLimit, setNewLimit] = useState("");
     const [announcement, setAnnouncement] = useState("");
-
+    const [username, setUsername] = useState("");
     
     useEffect(() => {
         if (adminSettings) {
@@ -19,8 +19,8 @@ const Settings = () => {
         }
     }, [adminSettings]);
 
-    const handleMaintenanceToggle = (e) => {
-        const isActive = e.target.checked;
+    const handleMaintenanceToggle = (event) => {
+        const isActive = event.target.checked;
         setMaintenance(isActive);
         updateAdminsettings(isActive ? 1 : 0, null, null);
     };
@@ -74,7 +74,7 @@ const Settings = () => {
                                 min="0"
                                 className="border border-gray-300 rounded-md px-4 py-2 w-full sm:w-40 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 placeholder="Amount"
-                                onChange={(e) => setNewLimit(e.target.value)}
+                                onChange={(event) => setNewLimit(event.target.value)}
                                 value={newLimit}
                             />
                             <span className="text-gray-600">NGN</span>
@@ -96,7 +96,7 @@ const Settings = () => {
                             className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                             rows="4"
                             placeholder="Type announcement..."
-                            onChange={(e) => setAnnouncement(e.target.value)}
+                            onChange={(event) => setAnnouncement(event.target.value)}
                             value={announcement}
                         />
                         <button
@@ -117,8 +117,11 @@ const Settings = () => {
                                 type="text"
                                 className="border border-gray-300 rounded-md px-4 py-2 w-full sm:w-72 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 placeholder="Enter User ID or Email"
+                                onChange={(event)=> setUsername(event.target.value)}
                             />
-                            <button className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-md transition">
+                            <button 
+                                className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-md transition" 
+                                onClick={() => {impersonateUser(username)}}>
                                 Impersonate
                             </button>
                         </div>

@@ -77,13 +77,15 @@ if ($existingUser) {
 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
 // Insert into database & also create wallet
-$sql = "INSERT INTO users (full_name, username, email, phone, location, password, created_at) VALUES (:name, :username, :email, :phone, :location, :password, :created_at)";
+$sql = "INSERT INTO users (role, status, full_name, username, email, phone, location, password, created_at) VALUES (:role, :status,:name, :username, :email, :phone, :location, :password, :created_at)";
 $sql2 = "INSERT INTO `wallet`(`username`, `balance`) VALUES (:username,:balance)";
 $stmt = $pdo->prepare($sql);
 $stmt2 = $pdo->prepare($sql2);
 
 try {
     $stmt->execute([
+        'role' => 'user',
+        'status' => "active",
         'name' => $name,
         'username' => $username,
         'email' => $email,
@@ -103,6 +105,7 @@ try {
         'email' => $email,
         'location' => $location,
         'role' => 'user',
+        "status" => "active",
     ];
     http_response_code(200);
     echo json_encode(['success' => true, "message" => "Signup successful"]);

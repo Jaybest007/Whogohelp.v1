@@ -19,14 +19,50 @@ if (empty($_SESSION['USER']['username'])) {
 
 include 'db_connect.php';
 
-/* ----------  Read action  ---------- */
+
 $raw      = file_get_contents('php://input');
 $bodyJson = json_decode($raw, true) ?: [];
 $action   = $bodyJson['action']
          ?? $_GET['action']
          ?? '';
 
-/* ----------  Router  ---------- */
+
+
+/**
+ * Log a transaction for a user.
+ *
+ * @param PDO $pdo
+ * @param string $transaction_id
+ * @param string $username
+ * @param string $errand_Id
+ * @param float $amount
+ * @param string $type
+ * @param string $description
+ * @return bool
+ */
+function logTransaction($pdo, $transaction_id, $username, $errand_Id, $amount, $type, $description) {
+    try {
+        $sql = "INSERT INTO `transactions`(`transaction_id`, `username`, `errand_Id`, `amount`, `type`, `description`) 
+                VALUES (:transaction_id, :username, :errand_Id, :amount, :type, :description)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'transaction_id' => $transaction_id,
+            'username' => $username,
+            'errand_Id' => $errand_Id,
+            'amount' => $amount,
+            'type' => $type,
+            'description' => $description
+        ]);
+        return $stmt->rowCount() > 0;
+    } catch (PDOException $e) {
+        error_log("Transaction log error: " . $e->getMessage());
+        return false;
+    }
+}
+
+
+
+
 switch ($action) {
     case 'fetchAllTransactions':
         fetchTransactions($pdo);                // all
@@ -115,25 +151,24 @@ function sendNotification($pdo, $username, $type, $message, $is_read = "false") 
     }
 }
 
+
+
 // -------Function to topup wallet-----
 function topUpWallet($pdo){
     $username = $_SESSION['USER']['username'];
     $email = $_SESSION['USER']['email'];
-    // Read JSON body correctly
     $rawBody = file_get_contents('php://input');
     $bodyJson = json_decode($rawBody, true) ?: [];
     
     $amount = $bodyJson['amount'] ?? null;
     $method = $bodyJson['method'] ?? null;
 
-    // Fix errand_Id generation
     $errand_Id = "TOPUP" .date('Y-m-d H:i:s') . $amount;
     $trx_id = generateTransactionId($errand_Id);
     $descr = "Top up of " . $amount . " to balance";
     $type = " Credit by " . $method;
 
     try{
-
         $stmt = $pdo->prepare("SELECT * FROM `wallet` WHERE `username`= :username");
         $stmt->execute(["username"=> $username]);
         $foundWallet = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -147,17 +182,8 @@ function topUpWallet($pdo){
             ]);
             $walletToppedUp = $stmt->rowCount() > 0;
             if($walletToppedUp){
-                $stmt = $pdo->prepare("INSERT INTO `transactions` (`transaction_id`, `username`, `errand_Id`, `amount`, `type`, `description`) 
-                       VALUES (:transaction_id, :username, :errand_id, :amount, :type, :description)");
-                $stmt->execute([
-                    'transaction_id' => $trx_id,
-                    'username' => $username,
-                    'errand_id' => $errand_Id,
-                    'amount' => $amount,
-                    'type' => "credit",
-                    'description' => $descr,
-                ]);
-                $TransactionLogged  = $stmt->rowCount() > 0;
+                // Use the reusable transaction logger
+                $TransactionLogged = logTransaction($pdo, $trx_id, $username, $errand_Id, $amount, "credit", $descr);
                 if($TransactionLogged){
                     sendNotification($pdo, $username, $type, $descr, 'false');
                     http_response_code(200);
@@ -189,12 +215,8 @@ function topUpWallet($pdo){
     }
 }
 
-
 function withdraw($pdo){
-
     $username = $_SESSION['USER']['username'];
-
-    // Read JSON body correctly
     $rawBody = file_get_contents('php://input');
     $bodyJson = json_decode($rawBody, true) ?: [];
     
@@ -204,9 +226,9 @@ function withdraw($pdo){
     $accountName = $bodyJson['accountName'] ?? null;
 
     if (!is_numeric($amount) || $amount <= 0) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Invalid withdrawal amount']);
-    exit;
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Invalid withdrawal amount']);
+        exit;
     }
 
     if(strlen($accountNumber) < 10 ){
@@ -215,14 +237,12 @@ function withdraw($pdo){
         exit;
     }
 
-    // Fix errand_Id generation
     $errand_Id = "WITHD" . date('Y-m-d H:i:s')." - " . $accountNumber;
     $trx_id = generateTransactionId($errand_Id);
     $descr = "Withdrawal of " . $amount . " from wallet to ". $bank ;
     $type = " Debit to " . $bank;
 
     try{
-
         $stmt = $pdo->prepare("SELECT * FROM `wallet` WHERE `username`= :username");
         $stmt->execute(["username"=> $username]);
         $foundWallet = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -236,50 +256,35 @@ function withdraw($pdo){
                 ]);
                 exit;
             }else{
-
-            $stmt = $pdo->prepare("UPDATE `wallet` SET `balance` = `balance` - :amount, `updated_at` = :updated_at WHERE `username` = :username");
-            $stmt->execute([
-                "amount" => $amount,
-                'updated_at' => date('c'),
-                "username"=> $username,
-            ]);
-            $walletWithdrawn = $stmt->rowCount() > 0;
-
-            if($walletWithdrawn){
-                $stmt = $pdo->prepare("INSERT INTO `transactions` (`transaction_id`, `username`, `errand_Id`, `amount`, `type`, `description`) 
-                       VALUES (:transaction_id, :username, :errand_id, :amount, :type, :description)");
-
+                $stmt = $pdo->prepare("UPDATE `wallet` SET `balance` = `balance` - :amount, `updated_at` = :updated_at WHERE `username` = :username");
                 $stmt->execute([
-                    'transaction_id' => $trx_id,
-                    'username' => $username,
-                    'errand_id' => $errand_Id,
-                    'amount' => $amount,
-                    'type' => "debit",
-                    'description' => $descr,
+                    "amount" => $amount,
+                    'updated_at' => date('c'),
+                    "username"=> $username,
                 ]);
-                $TransactionLogged  = $stmt->rowCount() > 0;
+                $walletWithdrawn = $stmt->rowCount() > 0;
 
-                if($TransactionLogged){
-                    sendNotification($pdo, $username, $type, $descr, 'false');
+                if($walletWithdrawn){
+                    // Use the reusable transaction logger
+                    $TransactionLogged = logTransaction($pdo, $trx_id, $username, $errand_Id, $amount, "debit", $descr);
+                    if($TransactionLogged){
+                        sendNotification($pdo, $username, $type, $descr, 'false');
+                        http_response_code(200);
+                        echo json_encode([
+                            'success' => true,
+                            'message' => 'Withdrawal is Successful',
+                        ]);
+                        exit;
+                    }
+                }else{
                     http_response_code(200);
                     echo json_encode([
-                        'success' => true,
-                        'message' => 'Withdrawal is Successful',
-                    ]);
-                    exit;
+                    'success' => false,
+                    'message' => 'Unable to add money to wallet balance',
+                ]);
+                exit;
                 }
-            }else{
-                http_response_code(200);
-                echo json_encode([
-                'success' => false,
-                'message' => 'Unable to add money to wallet balance',
-            ]);
-            exit;
             }
-
-            }
-
-            
         }else{
             http_response_code(200);
             echo json_encode([
@@ -292,6 +297,4 @@ function withdraw($pdo){
         http_response_code(500);
         echo json_encode(['error' => 'Database error']);
     }
-
-
 }

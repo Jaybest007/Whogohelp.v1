@@ -13,6 +13,8 @@ if($_SERVER['REQUEST_METHOD'] === 'OPTIONS'){
 
 include 'db_connect.php';
 
+
+
 if(!isset($_SESSION['USER'])){
     http_response_code(401);
     echo json_encode(["error" => "User is not logged in"]);
@@ -397,6 +399,26 @@ function changeStatus_rejected_by_poster($pdo){
     }
 }
 
+function logTransaction($pdo, $transaction_id, $username, $errand_Id, $amount, $type, $description) {
+    try {
+        $sql = "INSERT INTO `transactions`(`transaction_id`, `username`, `errand_Id`, `amount`, `type`, `description`) 
+                VALUES (:transaction_id, :username, :errand_Id, :amount, :type, :description)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            'transaction_id' => $transaction_id,
+            'username' => $username,
+            'errand_Id' => $errand_Id,
+            'amount' => $amount,
+            'type' => $type,
+            'description' => $description
+        ]);
+        return $stmt->rowCount() > 0;
+    } catch (PDOException $e) {
+        error_log("Transaction log error: " . $e->getMessage());
+        return false;
+    }
+}
+
 function changeStatus_completed($pdo){
     $status = "completed";
     $errand_Id = $_GET['errand_Id'];
@@ -419,19 +441,10 @@ function changeStatus_completed($pdo){
                 $transaction_id = generateTransactionId($errand_Id);
                 $dsc = "Credit for the completion of ". $errand_Id;
 
-                $sqlTransaction = "INSERT INTO `transactions`(`transaction_id`,`username`, `errand_Id`, `amount`, `type`, `description`) 
-                    VALUES (:transaction_id,:username, :errand_Id, :amount, :type, :description)";
-                $stmtTransaction = $pdo->prepare($sqlTransaction);
-                $stmtTransaction->execute([
-                    'transaction_id' => $transaction_id,
-                    'username' => $accepted_by, 
-                    'errand_Id' => $errand_Id,
-                    'amount' => $reward,
-                    'type' => "credit",
-                    'description' => $dsc
-                ]);
+                // Use the reusable transaction logger
+                $transactionLogged = logTransaction($pdo, $transaction_id, $accepted_by, $errand_Id, $reward, "credit", $dsc);
 
-                if($stmtTransaction->rowCount() > 0) {
+                if($transactionLogged) {
                     $sqlAddReward = "UPDATE `wallet` SET `balance`= `balance` + :reward WHERE `username` = :username" ;
                     $stmtAddReward = $pdo->prepare($sqlAddReward);
                     $stmtAddReward->execute(['reward' => $reward, 'username' => $accepted_by]);
@@ -488,7 +501,7 @@ function changeStatus_Cancel($pdo){
             exit;
         }
 
-        if ($errand['posted_by'] !== $posted_by) {
+        if ($errand['posted_by'] !== $posted_by ) {
             http_response_code(200);
             echo json_encode(["success" => false, "message" => "You are not authorized to cancel this errand"]);
             exit;
@@ -521,19 +534,19 @@ function changeStatus_Cancel($pdo){
 
         $transactionDescription = "Credit for the reversal of errand " . $errand_Id;
         $transaction_id = generateTransactionId($errand_Id);
-        $sqlTransaction = "INSERT INTO `transactions`(`transaction_id`,`username`, `errand_Id`, `amount`, `type`, `description`) 
-            VALUES (:transaction_id,:username, :errand_Id, :amount, :type, :description)";
-        $stmtTransaction = $pdo->prepare($sqlTransaction);
-        $stmtTransaction->execute([
-            'transaction_id' => $transaction_id,
-            "username" => $posted_by,
-            'errand_Id' => $errand_Id,
-            'amount' => $errand['reward'],
-            'type' => 'reversal',
-            'description' => $transactionDescription 
-        ]);
 
-        if ($stmtTransaction->rowCount() > 0) {
+        // Use the reusable transaction logger
+        $transactionLogged = logTransaction(
+            $pdo,
+            $transaction_id,
+            $posted_by,
+            $errand_Id,
+            $errand['reward'],
+            'reversal',
+            $transactionDescription
+        );
+
+        if ($transactionLogged) {
             http_response_code(200);
             echo json_encode(["success" => true, "message" => "Errand canceled & reward reversed successfully"]);
 
@@ -556,3 +569,4 @@ function changeStatus_Cancel($pdo){
         exit;
     }
 }
+
