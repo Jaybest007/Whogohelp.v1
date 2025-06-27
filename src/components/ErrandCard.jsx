@@ -107,41 +107,59 @@ const ErrandCard = ({
   };
 
   return (
-    <div className="bg-gray-900 border border-orange-500 rounded-lg shadow-md p-5 hover:scale-[1.02] transition-transform">
-      <h3 className="text-xl font-bold text-orange-400">{title}</h3>
-      <p className="mt-2 text-sm text-gray-300">
-        <span className="font-medium text-white">Location:</span> {pick_up_location} → {drop_off_location}
-      </p>
-
-      <div className="mt-3 flex justify-between items-center text-sm text-gray-400">
-        <span className="font-semibold text-white">Reward: {reward}</span>
-        <span className="italic">ID: #{errand_Id}</span>
+    <div className="bg-[#111827] border border-gray-800 rounded-2xl shadow-md hover:shadow-lg transition-all hover:scale-[1.01] duration-200 ease-in-out w-full max-w-md">
+      {/* Card Header */}
+      <div className="p-5 border-b border-gray-700 flex justify-between items-start">
+        <div>
+          <h3 className="text-xl font-bold text-orange-400 leading-snug">{title}</h3>
+          <p className="text-xs text-gray-500 italic mt-1">#{errand_Id}</p>
+        </div>
+        <span className="bg-amber-400 text-black text-xs font-semibold px-3 py-1 rounded-full mt-1 shadow-sm">
+          {(currentStatus).toUpperCase()}
+        </span>
       </div>
 
-      <p className="mt-2 inline-block bg-amber-500 text-black font-medium text-xs px-3 py-1 rounded">
-        Status: {currentStatus}
-      </p>
+      {/* Card Content */}
+      <div className="p-5 space-y-3 text-sm text-gray-300">
+        <div className="flex items-center gap-1">
+          <span className="text-gray-400">📍</span>
+          <span><strong className="text-white">From:</strong> {pick_up_location}</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="text-gray-400">📦</span>
+          <span><strong className="text-white">To:</strong> {drop_off_location}</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="text-yellow-400">💰</span>
+          <span><strong className="text-lime-400">Reward:</strong> {"₦" + Number(reward).toLocaleString("en-NG", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+        </div>
+      </div>
 
-      <button
-        className="mt-4 w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 rounded transition"
-        onClick={() =>
-          setSelectedErrands({
-            errand_Id,
-            title,
-            pick_up_location,
-            drop_off_location,
-            description,
-            reward,
-            posted_by,
-            notes,
-            rejection_reason,
-            pickup_code,
-            status: currentStatus
-          })
-        }
-      >
-        View Details
-      </button>
+  {/* Call to Action */}
+  <div className="p-5 pt-0">
+    <button
+      className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2.5 rounded-lg transition duration-150 text-sm"
+      onClick={() =>
+        setSelectedErrands({
+          errand_Id,
+          title,
+          pick_up_location,
+          drop_off_location,
+          description,
+          reward,
+          posted_by,
+          notes,
+          rejection_reason,
+          pickup_code,
+          status: currentStatus,
+        })
+      }
+    >
+      View Details
+    </button>
+  </div>
+
+
 
     
       {selectedErrands && (

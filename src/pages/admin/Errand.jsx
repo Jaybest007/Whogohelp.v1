@@ -35,11 +35,11 @@ const Errand = () => {
 
             <NavBar/>
 
-            <main className="p-4 sm:p-6 max-w-7xl mx-auto">
+            <main className="p-4 sm:p-6 max-w-7xl mx-auto ">
                 
-                <div className="w-full mt-2 p-6 bg-white rounded-xl ml-auto drop-shadow-xl">
-                    <RefreshBtn styling={"bg-blue-500 float-right text-white "} />
-                    <h2 className="font-bold text-3xl mb-5">Errand Page:</h2>
+                <div className="w-full mt-2 rounded-xl ml-auto bg-gradient-to-tr from-white via-gray-100 to-white shadow-xl p-6 border border-gray-200">
+                    <RefreshBtn styling={"bg-gray-100 border border-gray-200 float-right text-gray-600 hover:bg-gray-300 "} />
+                    <h2 className="font-bold text-3xl mb-5 border-b pb-2 border-gray-300">📦 Errand Page:</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-6">
         
                 <StatCard

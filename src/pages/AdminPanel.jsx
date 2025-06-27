@@ -38,9 +38,9 @@ const AdminPanel = () => {
 
       {/* Main Content */ }
         <main className="p-4 sm:p-6 max-w-7xl mx-auto ">
-          <div className="bg-white drop-shadow-xl p-6 rounded-xl">
-            <RefreshBtn styling={"bg-gray-500 float-right text-white mb-4"} />
-            <h1 className="text-2xl sm:text-3xl font-bold text-orange-600 mb-6 sm:mb-8">Dashboard Overview</h1>
+          <div className="bg-gradient-to-tr from-white via-gray-100 to-white shadow-xl p-6 border border-gray-200 rounded-2xl">
+            <RefreshBtn styling={"bg-gray-100 border border-gray-200 float-right text-gray-600 hover:bg-gray-300 "} />
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 sm:mb-8 border-b pb-2 border-gray-300">📊 Dashboard Overview</h1>
 
           {/* Dashboard Metrics */}
           <Overview/>

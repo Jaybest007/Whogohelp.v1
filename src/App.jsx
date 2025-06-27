@@ -28,7 +28,7 @@ const ChatWindow = lazy( ()=> import ('./pages/ChatWindow'));
 const Errand = lazy( ()=> import('./pages/admin/Errand'));
 const User  = lazy ( ()=> import('./pages/admin/User'));
 const Messages = lazy( ()=> import('./pages/admin/Messages'));
-
+const AdminWallet = lazy( ()=> import('./pages/admin/Wallet'));
 
 
 
@@ -78,7 +78,7 @@ function App() {
             <Route path='/admin/errand' element={<AdminProvider><AdminRoute><Errand/></AdminRoute></AdminProvider>}/> 
             <Route path='/admin/user' element={<AdminProvider><AdminRoute><User/></AdminRoute></AdminProvider>}/> 
             <Route path='/admin/messages' element={<AdminProvider><AdminRoute><Messages/></AdminRoute></AdminProvider>}/> 
-                
+            <Route path='/admin/wallet' element={<AdminProvider><AdminRoute><AdminWallet/></AdminRoute></AdminProvider>}/>    
                  
                 
                 

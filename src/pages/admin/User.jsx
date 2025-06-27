@@ -26,8 +26,8 @@ import NewUser from "../../components/adminComponent/NewUser";
                 <NavBar/>
             <main className="p-3 sm:p-6 max-w-7xl mx-auto">
                 
-                    <div className="w-full  p-5 bg-white rounded-xl ml-auto">
-                        <h2 className="text-3xl font-bold text-neutral-800 mb-6">User Page</h2>
+                    <div className="w-full p-5 ml-auto bg-gradient-to-tr from-white via-gray-100 to-white rounded-2xl shadow-xl border border-gray-200">
+                        <h2 className="text-3xl font-bold text-neutral-800 mb-6 border-b pb-2 border-gray-300">👥 User Page</h2>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-6">
                         {/* user */}
                         <StatCard

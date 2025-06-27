@@ -81,55 +81,62 @@ const ErrandDetailModal = ({
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center p-4">
       {/* this a pop confirmation div */}
-      {showCancelConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm text-gray-800">
-            <h2 className="flex items-center justify-center gap-2 text-2xl font-semibold text-center text-orange-600 mb-4">
-              <TiWarning size={27} className="text-red-500" />
-              Confirm Cancellation
-            </h2>
-            <p className="mb-5">Are you sure you want to cancel this errand? This action cannot be undone.</p>
+      {/* === CANCEL CONFIRMATION MODAL === */}
+{showCancelConfirm && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm text-gray-800">
+      <h2 className="flex items-center justify-center gap-2 text-2xl font-semibold text-orange-600 mb-4">
+        <TiWarning size={28} className="text-red-500" />
+        Confirm Cancellation
+      </h2>
+      <p className="mb-6 text-center text-gray-700">
+        Are you sure you want to cancel this errand? <br /> This action cannot be undone.
+      </p>
 
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setShowCancelConfirm(false)}
-                className="px-4 py-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100"
-              >
-                No, Go Back
-              </button>
-              <button
-                onClick={handleCancel}
-                className="px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600"
-              >
-                Yes, Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Buttons to confirm or go back */}
+      <div className="flex justify-end gap-3">
+        <button
+          onClick={() => setShowCancelConfirm(false)}
+          className="px-4 py-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 transition"
+        >
+          No, Go Back
+        </button>
+        <button
+          onClick={handleCancel}
+          className="px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-600 transition"
+        >
+          Yes, Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
-      {/* a pop confirmation page */}
+{/* === COMPLETE CONFIRMATION MODAL === */}
       {showConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm text-gray-800">
-            <h2 className="flex items-center justify-center gap-2 text-2xl font-semibold text-center text-green-600 mb-4">
-              <TiWarning size={27} className="text-green-500" />
+        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm text-gray-800">
+            <h2 className="flex items-center justify-center gap-2 text-2xl font-semibold text-green-600 mb-4">
+              <TiWarning size={28} className="text-green-500" />
               Confirm Completion
             </h2>
-            <p className="mb-5">Are you sure you want to complete this errand? This action cannot be undone.</p>
+            <p className="mb-6 text-center text-gray-700">
+              Are you sure you want to complete this errand? <br /> This action cannot be undone.
+            </p>
 
+            {/* Buttons to confirm or go back */}
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowConfirm(false)}
-                className="px-4 py-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100"
+                className="px-4 py-2 rounded-md border border-gray-300 text-gray-600 hover:bg-gray-100 transition"
               >
                 No, Go Back
               </button>
               <button
                 onClick={handleComplete}
-                className="px-4 py-2 rounded-md bg-green-500 text-white hover:bg-green-600"
+                className="px-4 py-2 rounded-md bg-green-500 text-white hover:bg-green-600 transition"
               >
-                Yes, Compelete
+                Yes, Complete
               </button>
             </div>
           </div>
@@ -139,144 +146,207 @@ const ErrandDetailModal = ({
       {!showCancelConfirm && (
         
       <div className="bg-gray-900 border border-orange-500 rounded-lg shadow-lg w-full max-w-md px-6 py-5">
+       <div className="flex items-center justify-between mb-6">
+        <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-orange-500 drop-shadow-md">
+          {errand.title}
+        </h2>
         <button
           onClick={onClose}
-          className="text-red-600 text-3xl ml-8 font-bold float-right cursor-pointer rounded-4xl hover:text-red-400 transition"
+          className="text-red-600 text-3xl font-bold hover:text-red-400 transition"
         >
           <IoMdCloseCircle />
         </button>
-        <h2 className="text-2xl font-bold text-orange-500 mb-4">{errand.title}</h2>
+      </div>
 
-        <div className="space-y-2 text-sm text-gray-300">
-          <p><span className="font-medium text-white">Description:</span> {errand.description}</p>
-          {errand.notes && (<p><span className="font-medium text-white">notes:</span> {errand.notes}</p>)}
-          <p><span className="font-medium text-white">Pick-up:</span> {errand.pick_up_location}</p>
-          <p><span className="font-medium text-white">Drop-off:</span> {errand.drop_off_location}</p>
-          <p><span className="font-medium text-white">Reward:</span> {errand.reward}</p>
-          <p><span className="font-medium text-white">Posted by:</span> <Link to={`/profile/${errand.posted_by}`} className='underline' > {errand.posted_by} </Link>  </p> 
-          {errand.accepted_by && (<p><span className="font-medium text-white">Accepted by:</span> <Link to={`/profile/${errand.accepted_by}`} className='underline' > {errand.accepted_by} </Link> </p>)}
-          {errand.accepted_by && errand.pickup_code && (<p>Pickup Code: <span className='font-bold text-xl text-white'>{errand.pickup_code}</span></p>)}
-          {/* this is the rendering of the reason why the errand completion was rejected by the poster */}
+
+        {/* this is my errand detail page that shows */}
+        <div className="space-y-6 text-sm text-gray-200 bg-gradient-to-br from-[#1f2937] via-[#111827] to-[#0f172a] p-6 rounded-2xl shadow-xl border border-gray-700">
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <p className="text-xs text-gray-400 uppercase mb-1">Description</p>
+            <p className="text-white font-medium">{errand.description}</p>
+          </div>
+
+          {errand.notes && (
+            <div>
+              <p className="text-xs text-gray-400 uppercase mb-1">Notes</p>
+              <p className="text-white">{errand.notes}</p>
+            </div>
+          )}
+
+          <div>
+            <p className="text-xs text-gray-400 uppercase mb-1">Pick-up Location</p>
+            <p className="text-white">{errand.pick_up_location}</p>
+          </div>
+
+          <div>
+            <p className="text-xs text-gray-400 uppercase mb-1">Drop-off Location</p>
+            <p className="text-white">{errand.drop_off_location}</p>
+          </div>
+
+          <div>
+            <p className="text-xs text-gray-400 uppercase mb-1">Reward</p>
+            <p className="text-lime-400 font-bold">{"₦" + Number(errand.reward).toLocaleString("en-NG", {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+          </div>
+        </div>
+
+        <hr className="border-gray-600 my-4" />
+
+        <div className="space-y-2">
+          <p>
+            <span className="text-gray-400">Posted by:</span>{" "}
+            <Link to={`/profile/${errand.posted_by}`} className="text-indigo-300 underline">
+              {errand.posted_by}
+            </Link>
+          </p>
+
+          {errand.accepted_by && (
+            <p>
+              <span className="text-gray-400">Accepted by:</span>{" "}
+              <Link to={`/profile/${errand.accepted_by}`} className="text-indigo-300 underline">
+                {errand.accepted_by}
+              </Link>
+            </p>
+          )}
+
+          {errand.accepted_by && errand.pickup_code && (
+            <p>
+              <span className="text-gray-400">Pickup Code:</span>{" "}
+              <span className="text-white text-lg font-semibold tracking-wider">{errand.pickup_code}</span>
+            </p>
+          )}
+
           {errand.accepted_by && errand.status === "rejected_by_poster" && (
-            <p className='bg-red-500 p-2 rounded-lg text-white'><span className="font-medium text-white ">Rejection reason: </span>{errand.rejection_reason}</p>)}
-        
+            <div className="bg-red-600 bg-opacity-80 p-3 rounded-lg shadow border border-red-800">
+              <p className="text-white font-semibold">Rejection Reason:</p>
+              <p className="text-red-100">{errand.rejection_reason}</p>
+            </div>
+          )}
+
           {!chat && (
-              <p className="mt-2 text-gray-500 italic">Chat will appear once the errand is accepted.</p>
-            )}
+            <p className="italic text-gray-500">Chat will appear once the errand is accepted.</p>
+          )}
 
           {chat &&
             chat.errand_id === errand.errand_Id &&
             (chat.poster_username === LoggedInUser || chat.helper_username === LoggedInUser) && (
-              <p className="mt-2 text-white ">
-                Chat room:{" "}
-                <Link to={`/chat/${chat?.chat_id}/${chat.poster_username === LoggedInUser 
+              <p>
+                <span className="text-gray-400">Chat room:</span>{" "}
+                <Link
+                  to={`/chat/${chat?.chat_id}/${chat.poster_username === LoggedInUser 
                     ? chat.helper_username 
-                    : chat.poster_username}`} className='underline'>
-                  Click here to chat <IoChatboxEllipses className="inline ml-1 text-white" size={20} />
+                    : chat.poster_username}`}
+                  className="text-sky-400 underline inline-flex items-center gap-1"
+                >
+                  Click here to chat <IoChatboxEllipses className="text-sky-400" size={18} />
                 </Link>
               </p>
-          )}
-
+            )}
         </div>
+      </div>
+
         
-        {/* ===THIS IS TO CHANGE THE STATUS FROM PENDING TO PROGRESS */}
-        <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full max-w-3xl mx-auto">
+        {/* === ACTION BUTTONS SECTION === */}
+        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-3xl mx-auto">
+          
+          {/* === From PENDING to PROGRESS === */}
           {errand.status === "pending" && (
             <button
               onClick={handleAccept}
               disabled={loading && actionType === 'accept'}
-              className="w-full bg-orange-500 text-white font-medium px-4 py-2 rounded hover:bg-orange-600 transition"
+              className={`w-full px-5 py-3 rounded-lg font-semibold text-white shadow transition
+                ${loading && actionType === 'accept' ? 'bg-orange-400' : 'bg-orange-500 hover:bg-orange-600'}`}
             >
               {loading && actionType === 'accept' ? "Accepting..." : "Accept"}
             </button>
           )}
 
-          {/* ===THIS IS TO CHANGE THE STATUS FROM PROGRESS TO AWAITING CONFIRMATION */}
-          {(errand.status === "progress" || errand.status === "rejected_by_poster" ) && errand.accepted_by === LoggedInUser && (
+          {/* === From PROGRESS/REJECTED to AWAITING CONFIRMATION === */}
+          {(errand.status === "progress" || errand.status === "rejected_by_poster") && errand.accepted_by === LoggedInUser && (
             <button
               onClick={handleMarkComplete}
               disabled={loading && actionType === 'completed_by_helper'}
-              className="w-full bg-blue-600 text-white font-medium px-4 py-2 rounded hover:bg-blue-700 transition"
+              className={`w-full px-5 py-3 rounded-lg font-semibold text-white shadow transition
+                ${loading && actionType === 'completed_by_helper' ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'}`}
             >
               {loading && actionType === 'completed_by_helper' ? "Completing..." : "Complete errand"}
             </button>
           )}
 
-          {/* ===THIS IS TO CHANGE THE STATUS FROM AWAITING CONFRIMATION TO COMPLETED */}
-          {errand.status === "awaiting_confirmation" && errand.posted_by === LoggedInUser &&  (
+          {/* === From AWAITING CONFIRMATION to COMPLETED (by poster) === */}
+          {errand.status === "awaiting_confirmation" && errand.posted_by === LoggedInUser && (
             <button
-              onClick={() => {
-                if (!loading) {
-                  setShowConfirm(true);
-                }
-              }}
+              onClick={() => !loading && setShowConfirm(true)}
               disabled={loading && actionType === 'confirming_errand'}
-              className="w-full bg-lime-600 text-white font-medium px-4 py-2 rounded hover:bg-lime-700 transition"
+              className={`w-full px-5 py-3 rounded-lg font-semibold text-white shadow transition
+                ${loading && actionType === 'confirming_errand' ? 'bg-lime-400' : 'bg-lime-600 hover:bg-lime-700'}`}
             >
-              {loading && actionType === 'confirming_errand' ? "Confirming..." : " Confirm Errand Completion"}
+              {loading && actionType === 'confirming_errand' ? "Confirming..." : "Confirm Errand Completion"}
             </button>
           )}
-          { errand.status === "awaiting_confirmation" && errand.posted_by !== LoggedInUser && (
-             <div>
-                
-                <CountdownTimer
-                  errandId={errand.errand_Id}
-                  onComplete={() => {
-                    // Trigger something after 3hrs
-                    onConfirming(errand.errand_Id);
-                    console.log("Time’s up for this errand!");
-                  }}
-                />
-             </div>
-              
+
+          {/* === Countdown timer display for helper side === */}
+          {errand.status === "awaiting_confirmation" && errand.posted_by !== LoggedInUser && (
+            <div className="col-span-full">
+              <CountdownTimer
+                errandId={errand.errand_Id}
+                onComplete={() => {
+                  onConfirming(errand.errand_Id);
+                  console.log("Time’s up for this errand!");
+                }}
+              />
+            </div>
           )}
 
+          {/* === Option to trigger Rejection Reason === */}
+          {errand.status === "awaiting_confirmation" && errand.posted_by === LoggedInUser && !rejection && (
+            <button
+              onClick={() => setRejection(true)}
+              className="text-gray-400 hover:text-gray-100 text-sm font-medium underline transition"
+            >
+              The errand isn't yet done?
+            </button>
+          )}
 
-          {/* ===THIS IS TO CHANGE THE STATUS FROM AWAITING CONFIRMATION BACK TO reject INCASE THE POSTER SAID THEY DIDNT CONFIRM THE ERRAND */}
-          {errand.status === "awaiting_confirmation" && errand.posted_by == LoggedInUser && !rejection && (
-            <button 
-              className='text-gray-300 cursor-pointer hover:text-gray-50' 
-              onClick={()=> setRejection(true)}>The errand is'nt yet done?
-              </button>)}
+          {/* === From AWAITING CONFIRMATION back to REJECTED (by poster) === */}
           {errand.status === "awaiting_confirmation" && errand.posted_by === LoggedInUser && rejection && (
             <>
-          <span >Reason for rejection:
-          <input 
-            type="text" 
-            placeholder='Reason for rejection' 
-            required
-            className='p-2 mt-1 block w-full bg-gray-100 text-black rounded-lg outline focus:outline outline-red-200'
-            onChange={(event)=> setReason(event.target.value)}
-            value={reason}
-          />
-          </span>
+              <div className="col-span-full space-y-2">
+                <label className="text-sm text-gray-300">Reason for rejection:</label>
+                <input
+                  type="text"
+                  placeholder="Reason for rejection"
+                  required
+                  className="block w-full bg-gray-800 text-white border border-red-400 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-300"
+                  onChange={(event) => setReason(event.target.value)}
+                  value={reason}
+                />
+              </div>
 
-            <button
-              onClick={handleReject}
-              disabled={loading && actionType === 'status_reject_by_poster'}
-              className="w-full bg-red-500 text-white font-medium px-4 py-2 rounded hover:bg-red-600 transition"
-            >
-              {loading && actionType === 'status_reject_by_poster' ? "Rejecting..." : "Reject Confirmation"}
-            </button>
+              <button
+                onClick={handleReject}
+                disabled={loading && actionType === 'status_reject_by_poster'}
+                className={`w-full px-5 py-3 rounded-lg font-semibold text-white shadow transition
+                  ${loading && actionType === 'status_reject_by_poster' ? 'bg-red-400' : 'bg-red-500 hover:bg-red-600'}`}
+              >
+                {loading && actionType === 'status_reject_by_poster' ? "Rejecting..." : "Reject Confirmation"}
+              </button>
             </>
           )}
-          
 
-          {/* ===THIS IS TO CHANGE THE STATUS  TO CANCEL */}
+          {/* === Cancel Option at Various States === */}
           {(errand.status === "pending" || errand.status === "progress" || errand.status === "rejected_by_poster") && (
             <button
-              onClick={() => {
-                if (!loading) {
-                  setShowCancelConfirm(true);
-                }
-              }}
+              onClick={() => !loading && setShowCancelConfirm(true)}
               disabled={loading && actionType === 'cancel'}
-              className="w-full bg-red-600 text-white font-medium px-4 py-2 rounded hover:bg-red-700 transition"
+              className={`w-full px-5 py-3 rounded-lg font-semibold text-white shadow transition
+                ${loading && actionType === 'cancel' ? 'bg-red-400' : 'bg-red-600 hover:bg-red-700'}`}
             >
               {loading && actionType === 'cancel' ? "Canceling..." : "Cancel"}
             </button>
           )}
         </div>
+
       </div>
       )}
     </div>

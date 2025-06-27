@@ -194,6 +194,17 @@ export const DashboardProvider = ({ children }) => {
     }
   }, [location, isAuthenticated]);
 
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    if (!location.pathname.includes("/notification")) {
+      isUserActive.current = true;
+      fetchNotifications();
+    } else {
+      smartRefresh();
+    }
+  }, [location.pathname, isAuthenticated, smartRefresh, fetchNotifications]);
+
+
   return (
     <DashboardContext.Provider
       value={{

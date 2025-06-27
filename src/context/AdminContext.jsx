@@ -67,6 +67,8 @@ export const AdminProvider = ({ children }) => {
     }
   }, [fetchAdminData]);
 
+
+  // =====TO CANCEL ERRAND OR COMPLETE ERRAND====
 const errand_action = useCallback(async (errand_id, action_type) => {
     try {
       const res = await axios.post(
@@ -90,6 +92,30 @@ const errand_action = useCallback(async (errand_id, action_type) => {
 
 
 
+  // ==== TO MARK MESSAGE AS READ ====
+  const markMessageAsRead = useCallback(async (id) => {
+    try {
+      const res = await axios.post(
+        "http://localhost/api//admin_actions.php",
+        { action: "mark_message_as_read", id },
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      if (res.data.success) {
+        toast.success(res.data.message);
+        fetchAdminData(); 
+      } else {
+        toast.error(res.data.message || "Failed to mark message as read.");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.error || "An error occurred while marking message as read.");
+    }
+  }, [fetchAdminData]);
+
+
+
 
 
 
@@ -103,6 +129,7 @@ const errand_action = useCallback(async (errand_id, action_type) => {
         loading,
         take_action,
         errand_action,
+        markMessageAsRead,
       }}
     >
       {children}

@@ -1,7 +1,6 @@
 import React from "react";
 
 const CompletedErrands = ({ errands }) => {
-
   const today = new Date().toISOString().slice(0, 10);
 
   const todaysErrands = (errands || []).filter(
@@ -10,8 +9,8 @@ const CompletedErrands = ({ errands }) => {
 
   return (
     <div className="mt-2">
-      <div className="overflow-y-auto overflow-x-hidden max-h-[550px]">
-        <table className="w-full border-collapse text-sm sm:text-base">
+      <div className="overflow-y-auto overflow-x-auto max-h-[550px]">
+        <table className="w-full border-collapse text-sm sm:text-base min-w-[700px]">
           <thead>
             <tr className="bg-green-200 text-gray-700">
               <th className="p-2 sm:p-3 text-left">Errand ID</th>

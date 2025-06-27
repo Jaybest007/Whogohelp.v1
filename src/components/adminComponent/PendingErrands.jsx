@@ -5,8 +5,8 @@ import CancelBtn from "./CancelBtn";
 const PendingErrands = ({ errands }) => {
 return (
     <div className="mt-2">
-        <div className="overflow-y-auto overflow-x-hidden max-h-[550px]">
-            <table className="w-full border-collapse text-sm sm:text-base">
+        <div className="overflow-y-auto overflow-x-auto max-h-[550px]">
+            <table className="w-full border-collapse text-sm sm:text-base min-w-[700px]">
                 <thead>
                     <tr className="bg-yellow-200 text-gray-700">
                         <th className="p-2 sm:p-3 text-left">Errand ID</th>
