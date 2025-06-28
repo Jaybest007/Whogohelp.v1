@@ -71,7 +71,7 @@ const NavBar = () => {
               key={label}
               to={to}
               onClick={() => setMenuOpen(false)}
-              className={`block px-6 py-3 flex items-center gap-3 transition-all ${
+              className={` px-6 py-3 flex items-center gap-3 transition-all ${
                 location.pathname === to
                   ? "bg-neutral-700 text-orange-400"
                   : "text-white/80 hover:text-orange-300"

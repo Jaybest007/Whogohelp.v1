@@ -10,7 +10,7 @@ import BottomNav from '../components/BottomNav';
 import Wallet from '../components/Wallet';
 import DasboardSkeleton from '../components/DashboardSkeleton';
 import MaintainanceMode from '../components/MaintainanceMode'; 
-
+import StarRating from '../components/StarRating'; // Assuming you have a StarRating component
 const Dashboard = () => {
 
    useEffect( ()=> {
@@ -23,7 +23,7 @@ const Dashboard = () => {
   const { dashboardData, refreshDashboardData, notifications, refreshNotifications, refreshWalletBalance , loading, adminSettings } = useDashboard();
   const [post, setPost] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-
+  const [rating, setRating] = useState(0);
 
   const handlePostSuccess = () => {
   setPost(false); // Hide post form
@@ -90,6 +90,13 @@ const Dashboard = () => {
             {/* Action Cards */}
             <span className="text-sm text-gray-300">Ready to run or get help with an errand?</span>
             <ActionCards post={post} setPost={setPost} />
+            
+            {/* Star Rating Component
+            { <StarRating
+              value={rating}
+              onChange={(star) => setRating(star)}
+            /> */}
+
 
             {/* Errands Section */}
             {post ? (

@@ -19,7 +19,7 @@ const SearchErrand = () => {
             placeholder="Search Errand ID..."
             className="border border-gray-300 p-3 pr-10 rounded-lg w-full text-base"
             value={searchErrand}
-            onChange={(e) => setSearchErrand(e.target.value)}
+            onChange={(event) => setSearchErrand(event.target.value)}
           />
           {searchErrand && (
             <span

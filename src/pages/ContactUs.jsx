@@ -76,115 +76,119 @@ function ContactPage() {
       }
     } catch (err) {
       console.error("API Error:", err);
-      setMessage("Failed to send message. Try again later.");
+      toast.error("Failed to send message. Try again later.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100 flex flex-col items-center px-4 py-16 pt-25">
-      <h1 className="text-4xl md:text-5xl font-bold text-orange-600 mb-4">Contact Us</h1>
-      <p className="text-lg text-gray-700 mb-10 text-center max-w-2xl">
-        Got questions, feedback, or want to collaborate on the <span className="font-semibold text-orange-500">WhoGoHelp?</span> project?
-        I’d love to hear from you. Fill the form or use any of the contact details below.
-      </p>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-white relative flex items-center justify-center px-4 py-20 overflow-hidden">
+  {/* Decorative Glow Blobs */}
+  <div className="absolute top-[-100px] left-[-100px] w-[300px] h-[300px] bg-orange-200 rounded-full filter blur-3xl opacity-40 animate-pulse" />
+  <div className="absolute bottom-[-80px] right-[-80px] w-[250px] h-[250px] bg-yellow-300 rounded-full filter blur-2xl opacity-30 animate-ping" />
 
-      {message && <p className='bg-green-200 text-sm text-center p-5 mb-2 rounded-2xl'>{message}</p>}
-      {error.server && <p className='bg-red-400 text-sm text-center p-5 mb-2 rounded-2xl'>{error.server}</p>}
+  {/* Main Content */}
+  <div className="max-w-5xl w-full z-10">
+    <h1 className="text-4xl md:text-5xl font-extrabold text-orange-600 text-center mb-3">Contact Us</h1>
+    <p className="text-center text-gray-600 text-lg max-w-2xl mx-auto mb-10">
+      Got questions, feedback, or want to collaborate on <span className="text-orange-500 font-semibold">WhoGoHelp</span>? Drop us a message — we're here for it.
+    </p>
 
-      <div className="w-full max-w-4xl bg-white rounded-xl shadow-md p-6 md:p-10 grid md:grid-cols-2 gap-8">
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          <div>
-            <label className="block text-gray-700 font-medium mb-1">Your Name</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleInput}
-              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
-              placeholder="John Doe"
-              required
-              minLength={3}
-            />
-            <span className="text-red-600 text-sm">{error.name}</span>
-          </div>
+    {message && (
+      <p className="bg-green-100 text-green-800 font-medium p-4 rounded-xl mb-4 text-center shadow">{message}</p>
+    )}
+    {error.server && (
+      <p className="bg-red-100 text-red-800 font-medium p-4 rounded-xl mb-4 text-center shadow">{error.server}</p>
+    )}
 
-          <div>
-            <label className="block text-gray-700 font-medium mb-1">Email Address</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInput}
-              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
-              placeholder="you@example.com"
-              required
-              minLength={3}
-              autoComplete="off"
-            />
-            <span className="text-red-600 text-sm">{error.email}</span>
-          </div>
+    <div className="grid md:grid-cols-2 gap-8 bg-gradient-to-tr from-neutral-100 via-white to-white rounded-2xl shadow-xl mt-6 border border-gray-200 p-8 md:p-12 transition-all duration-500">
+      {/* Form */}
+      <form className="space-y-6" onSubmit={handleSubmit}>
+        <div>
+          <label className="block text-gray-700 font-medium mb-1">Your Name</label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleInput}
+            placeholder="Jane Doe"
+            required
+            minLength={3}
+            className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+          />
+          <p className="text-red-500 text-sm mt-1">{error.name}</p>
+        </div>
 
-          <div>
-            <label className="block text-gray-700 font-medium mb-1">Message</label>
-            <textarea
-              name="message"
-              value={formData.message}
-              onChange={handleInput}
-              rows="4"
-              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
-              placeholder="Your message here..."
-              required
-              minLength={2}
-            />
-            <span className="text-red-600 text-sm">{error.message}</span>
-          </div>
+        <div>
+          <label className="block text-gray-700 font-medium mb-1">Email Address</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleInput}
+            placeholder="you@example.com"
+            required
+            autoComplete="off"
+            className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+          />
+          <p className="text-red-500 text-sm mt-1">{error.email}</p>
+        </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className={`bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-md transition ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            {loading ? (
-              <div className="flex justify-center">
-                <div className="w-6 h-6 border-4 border-white border-t-orange-600 rounded-full animate-spin" />
-              </div>
-            ) : (
-              "Send message"
-            )}
-          </button>
-        </form>
+        <div>
+          <label className="block text-gray-700 font-medium mb-1">Message</label>
+          <textarea
+            name="message"
+            value={formData.message}
+            onChange={handleInput}
+            placeholder="Tell us how we can help you..."
+            rows="5"
+            required
+            minLength={2}
+            className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+          />
+          <p className="text-red-500 text-sm mt-1">{error.message}</p>
+        </div>
 
-        <div className="flex flex-col justify-center space-y-6">
-          <div>
-            <h2 className="text-xl font-bold text-orange-600 mb-2">Reach Me</h2>
-            <p className="text-gray-700">
-              Ibraheem Ogunmola  
-              <br />Project Developer, WhoGoHelp?
-            </p>
-          </div>
-          <div>
-            <h3 className="font-medium text-gray-700">Email:</h3>
-            <p className="text-orange-500 break-all">ogunmolaibrahim26@gmail.com</p>
-          </div>
-          <div>
-            <h3 className="font-medium text-gray-700">Phone/WhatsApp:</h3>
-            <p className="text-orange-500">+234 705 075 5568</p>
-          </div>
-          <div>
-            <h3 className="font-medium text-gray-700">GitHub:</h3>
-            <p className="text-orange-500">@Jaybest007</p>
-          </div>
-          <div>
-            <h3 className="font-medium text-gray-700">Twitter:</h3>
-            <p className="text-orange-500">@Ogunmolaibrahe1</p>
-          </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-md transition ${
+            loading ? "opacity-60 cursor-not-allowed" : ""
+          }`}
+        >
+          {loading ? (
+            <div className="flex items-center justify-center gap-2">
+              <div className="w-5 h-5 border-2 border-white border-t-orange-600 rounded-full animate-spin" />
+              Sending...
+            </div>
+          ) : (
+            "Send Message"
+          )}
+        </button>
+      </form>
+
+      {/* Contact Info */}
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-xl font-bold text-orange-600 mb-2">Reach Me</h2>
+          <p className="text-gray-700">
+            <span className="font-medium">Ibraheem Ogunmola</span><br />
+            Project Developer, WhoGoHelp
+          </p>
+        </div>
+        <div className="space-y-2 text-gray-700">
+          <p><span className="font-semibold">📧 Email:</span> <span className="text-orange-500 break-all">ogunmolaibrahim26@gmail.com</span></p>
+          <p><span className="font-semibold">📱 Phone/WhatsApp:</span> <span className="text-orange-500">+234 705 075 5568</span></p>
+          <p><span className="font-semibold">💻 GitHub:</span> <span className="text-orange-500">@Jaybest007</span></p>
+          <p><span className="font-semibold">🐦 Twitter:</span> <span className="text-orange-500">@Ogunmolaibrahe1</span></p>
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+
   );
 }
 

@@ -3,14 +3,12 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useDashboard } from '../context/DashboardContext';
 
-
-
 function Signup() {
-    useEffect( ()=> {
-            document.title = "Sign up - WhoGoHelp";
-        }, []);    
+    useEffect(() => {
+        document.title = "Sign up - WhoGoHelp";
+    }, []);
     const navigate = useNavigate();
-    const {refreshDashboardData} = useDashboard();
+    const { refreshDashboardData } = useDashboard();
     const [formData, setFormData] = useState({
         name: "",
         username: "",
@@ -25,6 +23,7 @@ function Signup() {
     const [success, setSuccess] = useState("");
     const [loading, setLoading] = useState(false);
     const [inputType, setInputType] = useState("password");
+    const [agreed, setAgreed] = useState(false);
 
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])[^\s]{8,}$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -50,218 +49,241 @@ function Signup() {
             setError(prev => ({ ...prev, confirmPassword: "Passwords do not match" }));
         }
     }
-    function showpassword(event){
+    function showpassword(event) {
         event.preventDefault();
         setInputType(prevType => prevType === "password" ? "text" : "password");
-        
     }
-
-
-
 
     async function handleSubmit(event) {
-    event.preventDefault();
-    setLoading(true);
-    setSuccess("");
+        event.preventDefault();
+        setLoading(true);
+        setSuccess("");
 
-    const { name, username, email, phone, location, password, confirmPassword } = formData;
+        const { name, username, email, phone, location, password, confirmPassword } = formData;
 
-    // Validate Input
-    const newError = {
-        name: name.trim() ? "" : "Name can't be empty",
-        username: username.trim() ? "" : "Username can't be empty",
-        email: email.trim() ? "" : "Email can't be empty",
-        phone: phone.trim() ? "" : "Phone can't be empty",
-        location: location.trim() ? "" : "Location/Address can't be empty",
-        password: password.trim() ? "" : "Password can't be empty",
-        confirmPassword: confirmPassword.trim() ? "" : "Confirm Password can't be empty"
-    };
+        // Validate Input
+        const newError = {
+            name: name.trim() ? "" : "Name can't be empty",
+            username: username.trim() ? "" : "Username can't be empty",
+            email: email.trim() ? "" : "Email can't be empty",
+            phone: phone.trim() ? "" : "Phone can't be empty",
+            location: location.trim() ? "" : "Location/Address can't be empty",
+            password: password.trim() ? "" : "Password can't be empty",
+            confirmPassword: confirmPassword.trim() ? "" : "Confirm Password can't be empty"
+        };
 
-    setError(newError);
+        setError(newError);
 
-    const hasError = Object.values(newError).some(err => err !== "");
-    if (hasError) {
-        setLoading(false);
-        return;
-    }
+        const hasError = Object.values(newError).some(err => err !== "");
+        if (hasError) {
+            setLoading(false);
+            return;
+        }
+        if (!agreed) {
+            setError(prev => ({ ...prev, agreed: "You must agree to the Terms and Privacy Policy." }));
+            setLoading(false);
+            return;
+        }
 
-    try {
-        const response = await fetch("http://localhost/api/signup.php", { //  Fix API endpoint
-            method: "POST",
-            credentials: 'include',
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData)
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            setSuccess(data.message);
-            
-            // Properly reset form fields (includes phone)
-            setFormData({
-                name: "",
-                username: "",
-                email: "",
-                phone: "",
-                location: "",
-                password: "",
-                confirmPassword: ""
+        try {
+            const response = await fetch("http://localhost/api/signup.php", {
+                method: "POST",
+                credentials: 'include',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
             });
 
-            setError({});
-            refreshDashboardData();
-            // Navigate after a short delay
-            setTimeout(() => {
-                navigate("/dashboard"); 
-            }, 200);
-        } else {
-            setError(prev => ({ ...prev, ...data.errors })); // Match PHP error handling
-        }
-    } catch (err) {
-        console.error(err);
-        setError(prev => ({ ...prev, server: "Something went wrong. Please try again." }));
-    } finally {
-        setLoading(false);
-    }
-}
+            const data = await response.json();
 
+            if (data.success) {
+                setSuccess(data.message);
+                setFormData({
+                    name: "",
+                    username: "",
+                    email: "",
+                    phone: "",
+                    location: "",
+                    password: "",
+                    confirmPassword: ""
+                });
+                setError({});
+                refreshDashboardData();
+                setTimeout(() => {
+                    navigate("/dashboard");
+                }, 200);
+            } else {
+                setError(prev => ({ ...prev, ...data.errors }));
+            }
+        } catch (err) {
+            console.error(err);
+            setError(prev => ({ ...prev, server: "Something went wrong. Please try again." }));
+        } finally {
+            setLoading(false);
+        }
+    }
 
     return (
         <div className="flex justify-center mt-15 items-center min-h-screen bg-gradient-to-br from-orange-100 to-orange-300 p-6">
-  <div className="bg-white p-8 mt-2 rounded-2xl shadow-2xl w-full max-w-md">
-    <h1 className="text-4xl font-bold text-orange-600 mb-6 text-center">Create an Account</h1>
-    <p className="text-gray-600 text-center mb-6">Join WhoGoHelp and start making an impact in your community.</p>
+            <div className="bg-white p-8 mt-2 rounded-2xl shadow-2xl w-full max-w-md">
+                <h1 className="text-4xl font-bold text-orange-600 mb-6 text-center">Create an Account</h1>
+                <p className="text-gray-600 text-center mb-6">
+                    Join WhoGoHelp and start making an impact in your community.<br />
+                    <span className="text-xs text-gray-400">Your information is safe and encrypted.</span>
+                </p>
 
-    {/* Error & Success Messages */}
-    {success && <p className="text-green-500 text-sm mb-3 text-center">{success}</p>}
-    {error.server && <p className="text-red-500 text-sm mb-3 text-center">{error.server}</p>}
+                {/* Error & Success Messages */}
+                {success && <p className="text-green-500 text-sm mb-3 text-center">{success}</p>}
+                {error.server && <p className="text-red-500 text-sm mb-3 text-center">{error.server}</p>}
+                {error.agreed && <p className="text-red-500 text-sm mb-3 text-center">{error.agreed}</p>}
 
-    {/* Signup Form */}
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Full Name */}
-      <div>
-        <label htmlFor="name" className="text-gray-700 font-medium block mb-1">Full Name</label>
-        <input
-          type="text"
-          name="name"
-          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-          placeholder="Your Full Name"
-          value={formData.name}
-          onChange={handleInputChange}
-        />
-        {error.name && <p className="text-red-500 text-sm">{error.name}</p>}
-      </div>
+                {/* Signup Form */}
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Full Name */}
+                    <div>
+                        <label htmlFor="name" className="text-gray-700 font-medium block mb-1">Full Name</label>
+                        <input
+                            type="text"
+                            name="name"
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            placeholder="Your Full Name"
+                            value={formData.name}
+                            onChange={handleInputChange}
+                        />
+                        {error.name && <p className="text-red-500 text-sm">{error.name}</p>}
+                    </div>
 
-      {/* Username */}
-      <div>
-        <label htmlFor="username" className="text-gray-700 font-medium block mb-1">Username</label>
-        <input
-          type="text"
-          name="username"
-          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-          placeholder="Choose a Username"
-          value={formData.username}
-          onChange={handleInputChange}
-        />
-        {error.username && <p className="text-red-500 text-sm">{error.username}</p>}
-      </div>
+                    {/* Username */}
+                    <div>
+                        <label htmlFor="username" className="text-gray-700 font-medium block mb-1">Username</label>
+                        <input
+                            type="text"
+                            name="username"
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            placeholder="Choose a Username"
+                            value={formData.username}
+                            onChange={handleInputChange}
+                        />
+                        {error.username && <p className="text-red-500 text-sm">{error.username}</p>}
+                    </div>
 
-      {/* Email */}
-      <div>
-        <label htmlFor="email" className="text-gray-700 font-medium block mb-1">Email</label>
-        <input
-          type="email"
-          name="email"
-          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-          placeholder="Enter Your Email"
-          value={formData.email}
-          onChange={handleInputChange}
-        />
-        {error.email && <p className="text-red-500 text-sm">{error.email}</p>}
-      </div>
+                    {/* Email */}
+                    <div>
+                        <label htmlFor="email" className="text-gray-700 font-medium block mb-1">Email</label>
+                        <input
+                            type="email"
+                            name="email"
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            placeholder="Enter Your Email"
+                            value={formData.email}
+                            onChange={handleInputChange}
+                        />
+                        {error.email && <p className="text-red-500 text-sm">{error.email}</p>}
+                    </div>
 
-      {/* Phone Number */}
-      <div>
-        <label htmlFor="phone" className="text-gray-700 font-medium block mb-1">Phone Number</label>
-        <input
-          type="tel"
-          name="phone"
-          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-          placeholder="Enter Your Phone Number"
-          value={formData.phone}
-          onChange={handleInputChange}
-        />
-        {error.phone && <p className="text-red-500 text-sm">{error.phone}</p>}
-      </div>
+                    {/* Phone Number */}
+                    <div>
+                        <label htmlFor="phone" className="text-gray-700 font-medium block mb-1">Phone Number</label>
+                        <input
+                            type="tel"
+                            name="phone"
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            placeholder="Enter Your Phone Number"
+                            value={formData.phone}
+                            onChange={handleInputChange}
+                        />
+                        {error.phone && <p className="text-red-500 text-sm">{error.phone}</p>}
+                    </div>
 
-      {/* Location */}
-      <div>
-        <label htmlFor="location" className="text-gray-700 font-medium block mb-1">Location</label>
-        <input
-          type="text"
-          name="location"
-          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-          placeholder="e.g Ajah, Lagos or Moniya, Ibadan"
-          value={formData.location}
-          onChange={handleInputChange}
-        />
-        {error.location && <p className="text-red-500 text-sm">{error.location}</p>}
-      </div>
+                    {/* Location */}
+                    <div>
+                        <label htmlFor="location" className="text-gray-700 font-medium block mb-1">Location</label>
+                        <input
+                            type="text"
+                            name="location"
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            placeholder="e.g Ajah, Lagos or Moniya, Ibadan"
+                            value={formData.location}
+                            onChange={handleInputChange}
+                        />
+                        {error.location && <p className="text-red-500 text-sm">{error.location}</p>}
+                    </div>
 
-      {/* Password */}
-      <div className="relative">
-        <label htmlFor="password" className="text-gray-700 font-medium block mb-1">Password</label>
-        <input
-          type={inputType}
-          name="password"
-          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-          placeholder="Enter Password"
-          value={formData.password}
-          onChange={handleInputChange}
-        />
-        <button
-          type="button"
-          className="absolute top-10 right-4 text-gray-500 text-sm hover:text-orange-600 transition"
-          onClick={showpassword}
-        >
-            
-            
-          {inputType === "password" ?   <FaEyeSlash size={18}/>  : <FaEye size={18}/>  }
-        
-        </button>
-        {error.password && <p className="text-red-500 text-sm">{error.password}</p>}
-      </div>
+                    {/* Password */}
+                    <div className="relative">
+                        <label htmlFor="password" className="text-gray-700 font-medium block mb-1">Password</label>
+                        <input
+                            type={inputType}
+                            name="password"
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            placeholder="Enter Password"
+                            value={formData.password}
+                            onChange={handleInputChange}
+                        />
+                        <button
+                            type="button"
+                            className="absolute top-10 right-4 text-gray-500 text-sm hover:text-orange-600 transition"
+                            onClick={showpassword}
+                        >
+                            {inputType === "password" ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                        </button>
+                        {error.password && <p className="text-red-500 text-sm">{error.password}</p>}
+                    </div>
 
-      {/* Confirm Password */}
-      <div>
-        <label htmlFor="confirmPassword" className="text-gray-700 font-medium block mb-1">Confirm Password</label>
-        <input
-          type={inputType}
-          name="confirmPassword"
-          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-          placeholder="Confirm Your Password"
-          value={formData.confirmPassword}
-          onChange={handleInputChange}
-        />
-        {error.confirmPassword && <p className="text-red-500 text-sm">{error.confirmPassword}</p>}
-      </div>
+                    {/* Confirm Password */}
+                    <div>
+                        <label htmlFor="confirmPassword" className="text-gray-700 font-medium block mb-1">Confirm Password</label>
+                        <input
+                            type={inputType}
+                            name="confirmPassword"
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            placeholder="Confirm Your Password"
+                            value={formData.confirmPassword}
+                            onChange={handleInputChange}
+                        />
+                        {error.confirmPassword && <p className="text-red-500 text-sm">{error.confirmPassword}</p>}
+                    </div>
 
-      {/* Signup Button */}
-      <button
-        type="submit"
-        className="bg-orange-500 w-full text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition duration-200 flex items-center justify-center"
-      >
-        {loading ? (
-          <div className="w-5 h-5 border-4 border-white border-t-orange-600 rounded-full animate-spin"></div>
-        ) : (
-          "Sign Up"
-        )}
-      </button>
-    </form>
-  </div>
-</div>
+                    {/* Terms and Agreement */}
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            id="agree"
+                            checked={agreed}
+                            onChange={e => setAgreed(e.target.checked)}
+                            className="accent-orange-500"
+                        />
+                        <label htmlFor="agree" className="text-xs text-gray-700">
+                            I agree to the{" "}
+                            <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-orange-600 underline">
+                                Terms & Conditions
+                            </a>{" "}
+                            and{" "}
+                            <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-orange-600 underline">
+                                Privacy Policy
+                            </a>
+                        </label>
+                    </div>
 
+                    {/* Signup Button */}
+                    <button
+                        type="submit"
+                        className="bg-orange-500 w-full text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition duration-200 flex items-center justify-center"
+                    >
+                        {loading ? (
+                            <div className="w-5 h-5 border-4 border-white border-t-orange-600 rounded-full animate-spin"></div>
+                        ) : (
+                            "Sign Up"
+                        )}
+                    </button>
+                </form>
+
+                {/* Extra info */}
+                <div className="mt-6 text-xs text-gray-400 text-center">
+                    Already have an account?{" "}
+                    <a href="/login" className="text-orange-600 underline">Login here</a>
+                </div>
+            </div>
+        </div>
     );
 }
 

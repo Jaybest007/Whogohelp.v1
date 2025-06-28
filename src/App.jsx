@@ -10,6 +10,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import AdminRoute from './utilities/AdminRoute';
 
 
+
 const Landing = lazy(() => import('./pages/Landing'));
 const Signup = lazy(() => import('./pages/Signup'));
 const Login = lazy(() => import('./pages/Login'));
