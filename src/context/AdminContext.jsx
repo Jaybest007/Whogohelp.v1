@@ -22,7 +22,7 @@ export const AdminProvider = ({ children }) => {
   const fetchAdminData = useCallback( async () => {
     setLoading(true);
     try {
-      const res = await axios.get("https://whogohelp.free.nf/api/admin.php", {
+      const res = await axios.get("http://localhost/api/admin.php", {
         withCredentials: true,
         headers: { "Content-Type": "application/json" },
       });
@@ -51,7 +51,7 @@ export const AdminProvider = ({ children }) => {
   const take_action = useCallback(async (username, type) => {
     try {
       const res = await axios.post(
-        "https://whogohelp.free.nf/api/admin_actions.php",
+        "http://localhost/api/admin_actions.php",
         { action: "take_action", username , type },
         {
           withCredentials: true,
@@ -75,7 +75,7 @@ export const AdminProvider = ({ children }) => {
 const errand_action = useCallback(async (errand_id, action_type) => {
     try {
       const res = await axios.post(
-        "https://whogohelp.free.nf/api/admin_actions.php",
+        "http://localhost/api/admin_actions.php",
         { action: "errand_action", errand_id, action_type },
         {
           withCredentials: true,
@@ -99,7 +99,7 @@ const errand_action = useCallback(async (errand_id, action_type) => {
   const markMessageAsRead = useCallback(async (id) => {
     try {
       const res = await axios.post(
-        "https://whogohelp.free.nf/api/admin_actions.php",
+        "http://localhost/api/admin_actions.php",
         { action: "mark_message_as_read", id },
         {
           withCredentials: true,
@@ -123,7 +123,7 @@ const errand_action = useCallback(async (errand_id, action_type) => {
     setLoading(true);
     try {
       const res = await axios.post(
-        "https://whogohelp.free.nf/api/admin_actions.php",
+        "http://localhost/api/admin_actions.php",
         {action: "settings", maintenance_mode, withdrawal_limit, announcement },
         {
           withCredentials: true,
@@ -149,7 +149,7 @@ const errand_action = useCallback(async (errand_id, action_type) => {
     setLoading(true);
     try {
       const res = await axios.post(
-        "https://whogohelp.free.nf/api/admin_actions.php",
+        "http://localhost/api/admin_actions.php",
         { action: "user_impersonation", username },
         {
           withCredentials: true,

@@ -13,7 +13,7 @@ useEffect(() => {
   if (unreadNotifications.length > 0) {
     const timeoutId = setTimeout(() => {
       axios.post(
-        "https://whogohelp.free.nf/api/notifications.php",
+        "http://localhost/api/notifications.php",
         { action: "markasread" },
         {
           withCredentials: true,

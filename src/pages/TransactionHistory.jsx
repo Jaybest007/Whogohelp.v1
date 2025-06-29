@@ -74,7 +74,7 @@ function TransactionHistory() {
       return;
     }
 
-        axios.post("https://whogohelp.free.nf/api/transaction_history.php?action=topup", 
+        axios.post("http://localhost/api/transaction_history.php?action=topup", 
           {amount, method},
           { withCredentials: true,
             headers: {"Content-Type": "application/json" },
@@ -131,7 +131,7 @@ function TransactionHistory() {
 
   axios
     .post(
-      "https://whogohelp.free.nf/api/transaction_history.php?action=withdraw",
+      "http://localhost/api/transaction_history.php?action=withdraw",
       { withdrawalAmount: formattedAmount, bank, accountNumber, accountName },
       {
         withCredentials: true,
@@ -161,7 +161,7 @@ function TransactionHistory() {
   useEffect(() => {
     axios
       .post(
-        "https://whogohelp.free.nf/api/transaction_history.php?action=fetchAllTransactions",
+        "http://localhost/api/transaction_history.php?action=fetchAllTransactions",
         {},
         { withCredentials: true }
       )

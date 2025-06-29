@@ -10,7 +10,7 @@ const Logout = () => {
   useEffect(() => {
     axios
       .post(
-        "https://whogohelp.free.nf/api/logout.php",
+        "http://localhost/api/logout.php",
         {}, 
         {
           withCredentials: true,

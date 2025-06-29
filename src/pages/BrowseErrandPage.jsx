@@ -43,10 +43,10 @@ const BrowseErrandsPage = () => {
       setLoading(true);
       try {
         const [locationRes, myErrandsRes] = await Promise.all([
-          axios.get("https://whogohelp.free.nf/api/errand_history.php?action=byUsersLocation", {
+          axios.get("http://localhost/api/errand_history.php?action=byUsersLocation", {
             withCredentials: true,
           }),
-          axios.get("https://whogohelp.free.nf/api/errand_history.php?action=myErrands", {
+          axios.get("http://localhost/api/errand_history.php?action=myErrands", {
             withCredentials: true,
           }),
         ]);

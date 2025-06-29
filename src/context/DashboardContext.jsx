@@ -42,7 +42,7 @@ export const DashboardProvider = ({ children }) => {
   const fetchDashboardData = useCallback(() => {
     setLoading(true);
     axios
-      .get("https://whogohelp.free.nf/api/dashboard_data.php", {
+      .get("http://localhost/api/dashboard_data.php", {
         withCredentials: true,
         headers: { "Content-Type": "application/json" }
       })
@@ -73,7 +73,7 @@ export const DashboardProvider = ({ children }) => {
     if (!isAuthenticated || status === "banned") return;
     axios
       .post(
-        "https://whogohelp.free.nf/api/notifications.php",
+        "http://localhost/api/notifications.php",
         { action: "fetch_notifications" },
         {
           withCredentials: true,
@@ -94,7 +94,7 @@ export const DashboardProvider = ({ children }) => {
   const refreshWalletBalance = useCallback(() => {
     if (!isAuthenticated || status === "banned") return;
     axios
-      .get("https://whogohelp.free.nf/api/wallet.php", {
+      .get("http://localhost/api/wallet.php", {
         withCredentials: true,
         headers: { "Content-Type": "application/json" }
       })
@@ -112,7 +112,7 @@ export const DashboardProvider = ({ children }) => {
   const fetchChat = useCallback((errandId) => {
     axios
       .post(
-        "https://whogohelp.free.nf/api/messages.php",
+        "http://localhost/api/messages.php",
         { action: "fetchChat", errand_id: errandId },
         {
           withCredentials: true,

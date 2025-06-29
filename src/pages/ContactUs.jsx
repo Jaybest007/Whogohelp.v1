@@ -57,7 +57,7 @@ function ContactPage() {
 
     try {
       const response = await axios.post(
-        "https://whogohelp.free.nf/api/contact_us.php",
+        "http://localhost/api/contact_us.php",
         formData,
         { withCredentials: true }
       );

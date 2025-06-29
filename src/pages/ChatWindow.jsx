@@ -38,7 +38,7 @@ function ChatWindow() {
     fetchConversation();
 
     axios
-      .post('https://whogohelp.free.nf/api/messages.php', {
+      .post('http://localhost/api/messages.php', {
         action: 'fetch_by_chat_id',
         chat_id,
       }, {
@@ -60,7 +60,7 @@ function ChatWindow() {
 
     const intervalId = setInterval(() => {
       axios
-        .post('https://whogohelp.free.nf/api/messages.php', {
+        .post('http://localhost/api/messages.php', {
           action: 'update_status',
           username: loggedInUser,
           receiver,
@@ -100,7 +100,7 @@ function ChatWindow() {
   //==fetch conversationb(messages)
   function fetchConversation() {
     axios
-      .post('https://whogohelp.free.nf/api/messages.php', {
+      .post('http://localhost/api/messages.php', {
         action: 'fetch_conversation',
         chat_id,
       }, {
@@ -124,7 +124,7 @@ function ChatWindow() {
   // ===mark as read
   function markAsRead() {
     axios
-      .post('https://whogohelp.free.nf/api/messages.php', {
+      .post('http://localhost/api/messages.php', {
         action: 'mark_as_read',
         chat_id,
       }, {
@@ -151,7 +151,7 @@ function ChatWindow() {
     if (Object.values(newError).some((e) => e !== '')) return;
 
     axios
-      .post('https://whogohelp.free.nf/api/messages.php', {
+      .post('http://localhost/api/messages.php', {
         action: 'send_message',
         chat_id,
         sender,

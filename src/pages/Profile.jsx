@@ -34,7 +34,7 @@ function Profile() {
   useEffect(() => {
     setLoading(true);
 
-    axios.post("https://whogohelp.free.nf/api/profile.php", { action: "fetchUserData", username: username }, {
+    axios.post("http://localhost/api/profile.php", { action: "fetchUserData", username: username }, {
       withCredentials: true,
       headers: { "Content-Type": "application/json" }
     })
@@ -59,7 +59,7 @@ function Profile() {
     if (!newAbout.trim() || !newLocation.trim() || !newPhone.trim() ) return;
     setLoading(true);
     try {
-      const response = await axios.post("https://whogohelp.free.nf/api/profile.php", {
+      const response = await axios.post("http://localhost/api/profile.php", {
         action: "edit_profile",
         about: newAbout,
         phone: newPhone,

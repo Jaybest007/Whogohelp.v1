@@ -13,6 +13,7 @@ const OngoingErrands = ({ errands }) => {
                             <th className="p-2 sm:p-3 text-left">Date</th>
                             <th className="p-2 sm:p-3 text-left">Time</th>
                             <th className="p-2 sm:p-3 text-left">Posted by</th>
+                            <th className="p-2 sm:p-3 text-left">Accepted by</th>
                             <th className="p-2 sm:p-3 text-left">Status</th>
                             <th className="p-2 sm:p-3 text-left">Action</th>
                         </tr>
@@ -26,10 +27,11 @@ const OngoingErrands = ({ errands }) => {
                                     <td className="p-2 sm:p-3">{errand.date}</td>
                                     <td className="p-2 sm:p-3">{errand.time}</td>
                                     <td className="p-2 sm:p-3">{errand.posted_by}</td>
+                                    <td className="p-2 sm:p-3">{errand.accepted_by}</td>
                                     <td className="p-2 sm:p-3 text-blue-500 font-semibold">
                                         {errand.status}
                                     </td>
-                                    <td className="p-2 sm:p-3"><CancelBtn /></td>
+                                    <td className="p-2 sm:p-3"><CancelBtn errand_id={errand.errand_Id} /></td>
                                 </tr>
                             ))
                         ) : (

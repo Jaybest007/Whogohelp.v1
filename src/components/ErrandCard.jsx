@@ -30,7 +30,7 @@ const ErrandCard = ({
     setLoading(true);
     setActionType("accept");
     try {
-      const response = await axios.get("https://whogohelp.free.nf/api/errand_history.php", {
+      const response = await axios.get("http://localhost/api/errand_history.php", {
         withCredentials: true,
         params: {
           action: "status_progress",
@@ -57,7 +57,7 @@ const ErrandCard = ({
     setLoading(true);
     setActionType('cancel');
     try {
-      const response = await axios.get('https://whogohelp.free.nf/api/errand_history.php', {
+      const response = await axios.get('http://localhost/api/errand_history.php', {
         withCredentials: true,
         params: {
           action: 'status_cancel',
@@ -84,7 +84,7 @@ const ErrandCard = ({
     setLoading(true);
     setActionType('complete');
     try {
-      const response = await axios.get('https://whogohelp.free.nf/api/errand_history.php', {
+      const response = await axios.get('http://localhost/api/errand_history.php', {
         withCredentials: true,
         params: {
           action: 'status_completed',

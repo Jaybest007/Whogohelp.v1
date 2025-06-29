@@ -126,7 +126,6 @@ const SearchErrand = () => {
                 <p className="mb-2">Actions:</p>
                 {errand.status === "pending"  || errand.status === "progress" && (<><CancelBtn errand_id={errand.errand_Id} /> <CompletedBtn errand_id={errand.errand_Id}/></>)}
                 
-                      {/* <button onClick={() => banUser(user.username)} className="bg-red-800 text-white px-3 py-2 mr-3 rounded hover:bg-red-600 cursor-pointer shadow">Disable account</button> */}
                 </div>
             </div>
           ))}
