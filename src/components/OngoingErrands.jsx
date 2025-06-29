@@ -22,7 +22,7 @@ const OngoingErrands = ({ errands, triggerRefresh, triggerNotificationRefresh })
     setLoading(true);
     setActionType('completed_by_helper');
     try {
-      const response = await axios.get('http://localhost/api/errand_history.php', {
+      const response = await axios.get('https://whogohelp.free.nf/api/errand_history.php', {
         withCredentials: true,
         params: {
           action: 'status_completed_by_helper',
@@ -52,7 +52,7 @@ const OngoingErrands = ({ errands, triggerRefresh, triggerNotificationRefresh })
     setLoading(true);
     setActionType('cancel');
     try {
-      const response = await axios.get('http://localhost/api/errand_history.php', {
+      const response = await axios.get('https://whogohelp.free.nf/api/errand_history.php', {
         withCredentials: true,
         params: {
           action: 'status_cancel',

@@ -18,10 +18,9 @@ function TransactionHistory() {
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState("all");
   const [search, setSearch] = useState("");
-  const { walletActionMode, setWalletActionMode, refreshWalletBalance, refreshNotifications } = useDashboard();
+  const { walletActionMode, setWalletActionMode, refreshWalletBalance, refreshNotifications, adminSettings } = useDashboard();
   const navigate = useNavigate();
-
-
+  const withdrawalLimit = Number(adminSettings?.withdrawal_limit) || 50000; // Default to 50,000 if not set
   const [topUpData, setTopUpData] = useState({
     amount: "",
     method: "",
@@ -75,7 +74,7 @@ function TransactionHistory() {
       return;
     }
 
-        axios.post("http://localhost/api/transaction_history.php?action=topup", 
+        axios.post("https://whogohelp.free.nf/api/transaction_history.php?action=topup", 
           {amount, method},
           { withCredentials: true,
             headers: {"Content-Type": "application/json" },
@@ -106,9 +105,9 @@ function TransactionHistory() {
     // Validate Inputs
     const newError = {
       withdrawalAmount: withdrawalAmount.trim()
-        ? Number(withdrawalAmount) >= 1000 && Number(withdrawalAmount) <= 50000
+        ? Number(withdrawalAmount) >= 1000 && Number(withdrawalAmount) <= withdrawalLimit
           ? "" 
-          : "Amount must be between N100 and N50,000.00"
+          : `Amount must be between N1,000.00 and N${withdrawalLimit.toLocaleString()}.00`
         : "Amount can't be empty",
       bank: bank.trim() ? "" : "Pls input your bank",
       accountNumber:
@@ -132,7 +131,7 @@ function TransactionHistory() {
 
   axios
     .post(
-      "http://localhost/api/transaction_history.php?action=withdraw",
+      "https://whogohelp.free.nf/api/transaction_history.php?action=withdraw",
       { withdrawalAmount: formattedAmount, bank, accountNumber, accountName },
       {
         withCredentials: true,
@@ -162,7 +161,7 @@ function TransactionHistory() {
   useEffect(() => {
     axios
       .post(
-        "http://localhost/api/transaction_history.php?action=fetchAllTransactions",
+        "https://whogohelp.free.nf/api/transaction_history.php?action=fetchAllTransactions",
         {},
         { withCredentials: true }
       )
@@ -324,10 +323,10 @@ function TransactionHistory() {
 
               // Ensure proper validation after input
               const amountNum = Number(rawValue);
-              if (amountNum < 500) {
+              if (amountNum < 1000) {
                 setError({ ...error, withdrawalAmount: "Minimum Withdrawal is N1,000.00" });
-              } else if (amountNum > 50000) {
-                setError({ ...error, withdrawalAmount: "Maximum withdral is N50,000.00" });
+              } else if (amountNum > withdrawalLimit) {
+                setError({ ...error, withdrawalAmount: `Maximum withdrawal is N${withdrawalLimit.toLocaleString()}` });
               } else {
                 setError({ ...error, withdrawalAmount: "" });
               }

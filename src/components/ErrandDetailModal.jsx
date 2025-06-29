@@ -5,6 +5,8 @@ import { useDashboard } from '../context/DashboardContext';
 import CountdownTimer from './CountdownTimer';
 import { IoChatboxEllipses } from 'react-icons/io5';
 import { TiWarning } from 'react-icons/ti';
+import StarRating from './StarRating';
+
 
 const ErrandDetailModal = ({
   errand,
@@ -24,6 +26,7 @@ const ErrandDetailModal = ({
   const [reason, setReason] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
   const LoggedInUser = dashboardData?.username;
+  
 
   useEffect(() => {
     if (errand?.errand_Id) {
@@ -348,6 +351,9 @@ const ErrandDetailModal = ({
         </div>
       </div>
     </div>
+
+
+            
   );
 };
 

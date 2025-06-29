@@ -37,7 +37,7 @@ function LandingPage() {
           <p className="mt-5 text-sm italic text-gray-500">
             Still learning, still building... ignore the landing page if e dey somehow 😅
           </p>
-          <p className="text-sm text-gray-500">Version 4.1 — Updated on 23/06/2025</p>
+          <p className="text-sm text-gray-500">Version 4.5 — Updated on 28/06/2025</p>
         </div>
       </section>
 

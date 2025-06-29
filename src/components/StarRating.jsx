@@ -25,7 +25,7 @@ function StarRating({ value, onChange }) {
       <textarea
         placeholder="How was your experience?"
         value={comment}
-        onChange={(e) => setComment(e.target.value)}
+        onChange={(event) => setComment(event.target.value)}
         rows={4}
         className="w-full border border-gray-700 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 bg-gray-800 text-gray-100 placeholder-gray-400"
       />

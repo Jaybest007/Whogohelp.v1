@@ -86,7 +86,7 @@ function Signup() {
         }
 
         try {
-            const response = await fetch("http://localhost/api/signup.php", {
+            const response = await fetch("https://whogohelp.free.nf/api/signup.php", {
                 method: "POST",
                 credentials: 'include',
                 headers: { "Content-Type": "application/json" },

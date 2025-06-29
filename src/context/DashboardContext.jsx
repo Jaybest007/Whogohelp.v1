@@ -23,11 +23,11 @@ export const DashboardProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [filterBased, setFilterBased] = useState("global");
   const [adminSettings, setAdminSettings] = useState(null);
-
+  const [rateUser, setRateUser] = useState(false);
   const location = useLocation();
   const isUserActive = useRef(false);
   const lastFetched = useRef(0);
-
+  const status = dashboardData?.userStatus?.status;
   const unreadCount = useMemo(() => {
     return notifications?.filter((n) => n.is_read === "false").length || 0;
   }, [notifications]);
@@ -42,7 +42,7 @@ export const DashboardProvider = ({ children }) => {
   const fetchDashboardData = useCallback(() => {
     setLoading(true);
     axios
-      .get("http://localhost/api/dashboard_data.php", {
+      .get("https://whogohelp.free.nf/api/dashboard_data.php", {
         withCredentials: true,
         headers: { "Content-Type": "application/json" }
       })
@@ -70,10 +70,10 @@ export const DashboardProvider = ({ children }) => {
   }, []);
 
   const fetchNotifications = useCallback(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || status === "banned") return;
     axios
       .post(
-        "http://localhost/api/notifications.php",
+        "https://whogohelp.free.nf/api/notifications.php",
         { action: "fetch_notifications" },
         {
           withCredentials: true,
@@ -89,12 +89,12 @@ export const DashboardProvider = ({ children }) => {
           console.error("Notifications fetch error:", err);
         }
       });
-  }, [isAuthenticated]);
+  }, [isAuthenticated, status]);
 
   const refreshWalletBalance = useCallback(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || status === "banned") return;
     axios
-      .get("http://localhost/api/wallet.php", {
+      .get("https://whogohelp.free.nf/api/wallet.php", {
         withCredentials: true,
         headers: { "Content-Type": "application/json" }
       })
@@ -112,7 +112,7 @@ export const DashboardProvider = ({ children }) => {
   const fetchChat = useCallback((errandId) => {
     axios
       .post(
-        "http://localhost/api/messages.php",
+        "https://whogohelp.free.nf/api/messages.php",
         { action: "fetchChat", errand_id: errandId },
         {
           withCredentials: true,
@@ -125,7 +125,7 @@ export const DashboardProvider = ({ children }) => {
 
   // ===refresh======
   const smartRefresh = useCallback(() => {
-    if (!isAuthenticated || !dashboardData) return;
+    if (!isAuthenticated || !dashboardData || status === "banned") return;
     const now = Date.now();
     const recentlyFetched = now - lastFetched.current < 5000;
 
@@ -140,7 +140,7 @@ export const DashboardProvider = ({ children }) => {
   }, [fetchDashboardData, fetchNotifications, isAuthenticated, dashboardData, location.pathname]);
 
   useEffect(() => {
-    if (!isAuthenticated || dashboardData) return;
+    if (!isAuthenticated || dashboardData || status === "banned") return;
     fetchDashboardData();
   }, [isAuthenticated, dashboardData, fetchDashboardData]);
 
@@ -160,7 +160,7 @@ export const DashboardProvider = ({ children }) => {
   }, [isAuthenticated, location.pathname, fetchNotifications]);
 
   useEffect(() => {
-    const status = dashboardData?.userStatus?.status;
+  
     if (isAuthenticated && status === "banned") {
       clearDashboardData();
       setIsAuthenticated(false);
@@ -212,6 +212,7 @@ export const DashboardProvider = ({ children }) => {
     }
   }, [location.pathname, isAuthenticated, smartRefresh, fetchNotifications]);
 
+  //====rate user====
 
   return (
     <DashboardContext.Provider
@@ -237,6 +238,8 @@ export const DashboardProvider = ({ children }) => {
         setFilterBased,
         unreadCount,
         adminSettings,
+        rateUser,
+        setRateUser,
       }}
     >
       {children}

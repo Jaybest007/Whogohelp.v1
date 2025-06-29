@@ -60,7 +60,7 @@ function Login() {
         }
 
         try {
-            const response = await fetch("http://localhost/api/login.php", {
+            const response = await fetch("https://whogohelp.free.nf/api/login.php", {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json",

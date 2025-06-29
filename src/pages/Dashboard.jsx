@@ -20,10 +20,10 @@ const Dashboard = () => {
 
 
 
-  const { dashboardData, refreshDashboardData, notifications, refreshNotifications, refreshWalletBalance , loading, adminSettings } = useDashboard();
+  const { dashboardData, refreshDashboardData, notifications, refreshNotifications, refreshWalletBalance , loading, adminSettings, rateUser, setRateUser } = useDashboard();
   const [post, setPost] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-  const [rating, setRating] = useState(0);
+ const [rating, setRating] = useState(0);
 
   const handlePostSuccess = () => {
   setPost(false); // Hide post form
@@ -90,15 +90,30 @@ const Dashboard = () => {
             {/* Action Cards */}
             <span className="text-sm text-gray-300">Ready to run or get help with an errand?</span>
             <ActionCards post={post} setPost={setPost} />
-            
-            {/* Star Rating Component
-            { <StarRating
-              value={rating}
-              onChange={(star) => setRating(star)}
-            /> */}
+          
+          {/* this to rate user */}
+          {/* ==========start======= */}
+          {rateUser && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+              <div className="bg-gray-900 rounded-xl shadow-2xl p-8 max-w-xs w-full flex flex-col items-center">
+                <h3 className="text-lg font-semibold mb-4 text-white">Rate User</h3>
+                <StarRating
+                  value={rating}
+                  onChange={(star) => setRating(star)}
+                />
+                <button
+                  className="mt-6 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition"
+                  onClick={() => setRateUser(rating)}
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
+          )}
+          {/* ==========end======= */}
 
 
-            {/* Errands Section */}
+          {/* Errands Section */}
             {post ? (
               <PostErrand onSuccess={handlePostSuccess} />
             ) : (
